@@ -14,3 +14,4 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
       - run: npm test
+      - run: node --test examples/native-smoke/csv.test.mjs

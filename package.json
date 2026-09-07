@@ -1,7 +1,7 @@
 {
   "name": "@dante01yoon/astra-orchestrator",
-  "version": "0.1.0",
-  "description": "Astra plans and reviews; Luna writes bounded patches with test gates and auditable usage.",
+  "version": "0.2.0",
+  "description": "Astra plans and reviews; Luna implements. Native Codex skill/plugin and a standalone CLI with recorded usage.",
   "type": "module",
   "bin": {
     "astra-orchestrator": "bin/astra.mjs"

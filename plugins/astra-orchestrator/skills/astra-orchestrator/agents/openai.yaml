@@ -1,0 +1,4 @@
+interface:
+  display_name: "Astra Orchestrator"
+  short_description: "Astra plans and reviews; Luna implements"
+  default_prompt: "Use $astra-orchestrator to plan this change, delegate focused implementation to Luna, run the checks, and get an independent Astra review."

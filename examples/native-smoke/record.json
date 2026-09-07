@@ -1,0 +1,53 @@
+{
+  "date": "2026-09-07",
+  "mode": "native",
+  "host": "Codex desktop native collaboration tools",
+  "primaryModel": "unverified",
+  "worker": {
+    "tool": "collaboration.spawn_agent",
+    "agentType": "worker",
+    "requestedModel": "gpt-5.6-luna",
+    "requestedEffort": "medium",
+    "forkTurns": "none",
+    "taskName": "native_csv_worker",
+    "ownedFiles": [
+      "csv.mjs"
+    ]
+  },
+  "reviewer": {
+    "tool": "collaboration.spawn_agent",
+    "agentType": "default",
+    "requestedModel": "gpt-6-astra",
+    "requestedEffort": "low",
+    "forkTurns": "none",
+    "taskName": "native_astra_review",
+    "verdict": "accept"
+  },
+  "checks": {
+    "command": "node --test csv.test.mjs",
+    "tests": 5,
+    "passed": 5,
+    "failed": 0,
+    "runBy": [
+      "worker",
+      "primary",
+      "independent reviewer"
+    ]
+  },
+  "repairRounds": 0,
+  "backendModelIndependentlyVerified": false,
+  "tokenUsage": "unavailable",
+  "apiEquivalentCost": "unavailable",
+  "executionNotes": [
+    "The parent explicitly loaded and applied the repository skill for this forward test.",
+    "Native tools exposed explicit model selection; newly installed custom role profiles were not loaded into the existing conversation.",
+    "No codex exec implementation or review call was used.",
+    "Plugin installation was tested separately in an isolated Codex home, not in the user global installation.",
+    "No claim of automatic plugin invocation in a newly opened desktop task is made."
+  ],
+  "sha256": {
+    "CONTRACT.md": "d072de354651d5bbd4968060b634480e25a8a45439fb14bdea778e50663ba179",
+    "csv.test.mjs": "f4dd1c3a24004fab468865407a94c20302424caa691e239ea8d3fec3a5890f7a",
+    "csv.mjs": "cc6d1ea50a759cb7608ef61c5b3da71313f4f00d29a98ba27819b3197cacdfa0"
+  }
+}

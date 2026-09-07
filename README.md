@@ -1,109 +1,152 @@
 # Astra Orchestrator
 
-**Astra가 계획과 리뷰를 맡고, Luna가 범위가 정해진 코드를 작성합니다.** 실행 결과는 별도의 후보 폴더에 보관하고, 테스트와 리뷰를 통과한 파일만 적용할 수 있습니다.
+**Astra plans and reviews. Luna implements focused tasks. Use it inside Codex, or run the existing CLI for a recorded experiment.**
 
-Node.js로 직접 만든 작은 CLI입니다. Codex의 기존 로그인과 `codex exec`를 사용하며, 추가 API 키나 npm 런타임 의존성이 필요하지 않습니다. 구독 모델 접근 권한과 사용량은 필요합니다. 모델 조합 자체가 할인이나 캐시 적중을 보장하지는 않습니다.
+[Native setup](docs/native-mode.md) · [CLI results](docs/live-results.md) · [Validation](docs/native-validation.md) · [한국어 CLI 안내](README.ko.md)
+
+Two ways to use the same approach:
+
+| | Native skill / plugin | Standalone CLI |
+|---|---|---|
+| Start with | A normal coding request in Codex | An explicit `job.json` |
+| Workers | Native subagents in your conversation | Separate `codex exec` calls |
+| Best for | Everyday work in an existing repository | Bounded file-generation tasks and repeatable comparisons |
+| File scope | Ownership instructions and diff review under host permissions | Runtime validation of returned file paths; staged candidate files |
+| Validation | Primary agent runs checks, then requests an independent review | Automated checks and review gates before candidate acceptance |
+| Usage record | Only usage the host actually exposes; otherwise unavailable | JSONL token receipts and Standard API cost equivalents |
+
+Neither mode guarantees savings, cache hits, or a particular result. A small task may be better handled by one agent.
 
 ```mermaid
 flowchart LR
-  Goal[목표 + 파일 계약] --> Plan[Astra low: 계획]
-  Plan --> Gate{소유권 검증}
-  Gate --> W1[Luna medium: 계산 모듈]
-  Gate --> W2[Luna medium: 웹 화면]
-  W1 --> Test[실제 테스트]
-  W2 --> Test
-  Test --> Review[Astra low: 독립 리뷰]
-  Review --> Candidate[검증된 후보 + 사용량 보고서]
-  Test -->|실패: 한도 내| Repair[원래 작업자에게 수정]
-  Review -->|수정 필요: 한도 내| Repair
-  Repair --> Test
+  Goal[Your task] --> Plan[Astra: scope and plan]
+  Plan --> Route{Useful to delegate?}
+  Route -->|Tiny change| Solo[Primary agent implements]
+  Route -->|Bounded work| Luna[Luna: owned files]
+  Luna --> Checks[Run actual checks]
+  Checks --> Review[Fresh Astra review]
+  Review -->|Accept| Done[Verified result]
+  Review -->|Fix| Luna
+  Solo --> Done
 ```
 
-## 시작하기
+## Quick start: use it inside Codex
 
-Node.js 22 이상, `codex exec --help`에 `--ignore-user-config`, `--ephemeral`, `--output-schema`, `--json`이 있는 최신 Codex CLI가 필요합니다. macOS에서 Codex CLI 0.153.4로 실제 연결을 확인했습니다. 다른 플랫폼은 CI의 코드 검사와 실제 모델 실행 검증 범위가 다릅니다.
+Requires Node.js 22+ for installation, access to Astra and Luna, and a current Codex host with native subagents. Native work uses your Codex account's model access and usage; no extra API key is required by this project.
 
 ```sh
 git clone https://github.com/dante01yoon/astra-orchestrator.git
 cd astra-orchestrator
+node plugins/astra-orchestrator/scripts/install-native.mjs --project /absolute/path/to/your-project
+```
+
+Open a new trusted Codex task in **your project**, select **GPT-6 Astra** as the primary model, and say:
+
+```text
+$astra-orchestrator Add CSV export to the existing reports page.
+Preserve existing behavior and run the relevant checks before review.
+```
+
+The installer adds the skill to `.agents/skills/` and two role profiles to `.codex/agents/`. It preserves existing `config.toml`, permissions, authentication, MCP settings, and `AGENTS.md`. A user-modified or conflicting role file is not overwritten. Use `--dry-run` to preview or `--check` to verify an installation.
+
+The primary agent scopes the work, gives Luna an explicit file contract, verifies the result, and asks a fresh Astra reviewer to inspect it. One implementer is the default for bounded work; two are used only for independent files. Tiny changes stay with the primary agent unless you explicitly request delegation.
+
+**The skill cannot switch your primary model.** The default worker is Luna medium; the reviewer is Astra low. Role files pin these values where supported. On hosts exposing explicit model selection in native spawn tools, the skill can request those values directly. If neither route is available, it reports the missing capability instead of silently changing models or starting the CLI.
+
+### Prefer a plugin?
+
+Install the same skill from this repository's marketplace:
+
+```sh
+codex plugin marketplace add dante01yoon/astra-orchestrator
+codex plugin add astra-orchestrator@astra-orchestrator
+```
+
+Start a new Codex session and select the skill from the picker, or invoke `$astra-orchestrator:astra-orchestrator` (the plugin-qualified name). The standalone installation uses `$astra-orchestrator`. Plugin support is available in the Codex app and CLI; use the standalone skill in the IDE extension.
+
+**Plugin installation alone does not register the companion custom-agent TOMLs.** If your host cannot select models directly in its native spawn tool, clone this repository and install just the roles:
+
+```sh
+node plugins/astra-orchestrator/scripts/install-native.mjs --project /absolute/path/to/your-project --roles-only
+```
+
+Choose either the standalone skill or the plugin to avoid duplicate skill entries. See [native setup, model routing, and removal](docs/native-mode.md).
+
+## Existing CLI: explicit jobs and recorded runs
+
+The `codex exec` runner remains available. It is independent of the plugin and never activates as an automatic fallback.
+
+Use Node.js 22+ and a current Codex CLI whose `exec --help` includes `--ignore-user-config`, `--ephemeral`, `--output-schema`, and `--json`. Live calls were verified on macOS with Codex CLI 0.153.4. This repository has no npm runtime dependencies.
+
+```sh
 npm test
 node bin/astra.mjs run examples/cache-lab/job.json --dry-run --out .runs/check
 node bin/astra.mjs run examples/cache-lab/job.json --out .runs/demo
 ```
 
-`--dry-run`은 입력과 파일 범위를 검증하고 후보 폴더를 준비합니다. 모델을 호출하지 않습니다. 실제 `run`은 설정한 모델 사용량을 소비합니다. 같은 출력 폴더를 다시 쓰지 않으므로 다음 실행에는 새 경로를 지정하세요.
+`--dry-run` validates the job and prepares a candidate without model calls. A live run consumes model usage. Each run needs a new output directory. To select another CLI installation, pass `--codex /absolute/path/to/codex` or set `CODEX_BIN`. The runner uses existing Codex authentication, ignores user configuration for the child requests, and pins models and effort from the job without changing global settings.
 
-기본 PATH의 CLI 대신 다른 설치를 쓰려면 `--codex /absolute/path/to/codex` 또는 `CODEX_BIN`을 지정합니다. 사용자 전역 config를 읽지 않고 프로젝트의 `job.json`에서 모델과 추론 수준을 고정합니다. 로그인은 기존 Codex 인증을 사용합니다. 사용자 전역 설정을 수정하지 않습니다.
-
-실행 후 `.runs/demo/report.html`에서 실제 모델별 사용량과 검사 결과를 확인합니다. `.runs/demo/candidate/`에 생성된 웹 도구가 있습니다.
+Open `.runs/demo/report.html` for checks and usage. The generated files are in `.runs/demo/candidate/`:
 
 ```sh
 python3 -m http.server 8791 --bind 127.0.0.1 --directory .runs/demo/candidate
-# 브라우저에서 http://127.0.0.1:8791 열기
 ```
 
-검토가 끝난 후보를 원래 seed 또는 같은 내용의 작업 사본에 적용할 수 있습니다.
+After review, apply the accepted candidate to the original seed or an identical working copy:
 
 ```sh
 node bin/astra.mjs apply .runs/demo examples/cache-lab/seed
 ```
 
-적용 전에 원본 컨텍스트와 후보의 해시를 모두 확인합니다. 원본이 바뀌었으면 중단합니다. 적용은 여러 파일을 한 번에 원자적으로 교체하는 트랜잭션이 아니므로 버전 관리 중인 작업 사본에서 사용하세요.
+Application verifies original context and candidate hashes and stops if they changed. It is not a transaction across all files; use a version-controlled working copy.
 
-## 무엇을 다르게 구현했나
+### Adapt a CLI job
 
-| 영역 | 이 도구의 동작 |
+Copy `examples/cache-lab/job.json` and change `source`, `goal`, `context`, `outputs`, and `checks`. `source` is relative to the job file; context and output paths are explicit files relative to source. Wildcards, hidden paths, and symlinks are rejected. Checks are argument arrays, not shell strings.
+
+Define interfaces, owned files, error handling, and acceptance checks before delegation. Keep dependent files together or settle their contract first. `mode: "solo"` skips the planner and uses Astra implementation plus the same independent review.
+
+| Setting | Meaning |
 |---|---|
-| 작업 전달 | 전체 대화 대신 목표, 파일별 계약, 명시한 문맥 파일만 전달 |
-| 분배 | Astra가 최대 작업자 수 안에서 1개 또는 여러 독립 작업을 선택 |
-| 파일 소유권 | 출력 경로의 누락·중복·다른 작업자 파일 수정을 코드로 거부 |
-| 실행 순서 | Luna 결과 → 실제 검사 → Astra 리뷰 → 후보 승인 |
-| 재작업 | 모델과 파일 범위를 유지한 수정, 횟수와 호출 수 제한 |
-| 비용 기록 | 실제 JSONL 입력·캐시 읽기·캐시 쓰기·출력 사용량 분리 |
-| 비교 | `solo.json`은 계획 호출 없이 Astra 구현 + 같은 독립 리뷰 |
+| `maxWorkers` | Concurrent independent workers; at most 4 |
+| `maxCalls` | Total planning, implementation, repair, and review calls |
+| `maxRepairs` | Repair rounds after failed tests or review |
+| `maxPromptChars` | Characters per request, not tokens |
+| `stopAfterTokens` | Stops admission of new calls after observed usage crosses the threshold; in-flight calls can exceed it |
+| `timeoutSeconds` | Timeout for each CLI call and check |
 
-이는 **완성 파일을 반환하는 작업에 초점을 맞춘 방식**입니다. 모델에게 JSON으로 파일 전체를 받습니다. 대형 저장소 탐색, 임의의 장시간 도구 실행, 의존 작업 DAG, 네이티브 Codex 하위 에이전트 세션 관리나 자동 커밋·배포 기능은 없습니다. 큰 기존 파일을 여러 번 통째로 생성하는 작업은 비용에 불리할 수 있습니다.
+The runner receives complete files as structured JSON. It validates missing, duplicate, and cross-worker output paths before accepting them. It is designed for bounded file generation, not unrestricted repository exploration or long-running task graphs. Regenerating large files can be expensive. Neither mode commits or deploys automatically.
 
-## 자신의 프로젝트에 쓰기
+## What we actually measured
 
-`examples/cache-lab/job.json`을 복사해서 `source`, `goal`, `context`, `outputs`, `checks`를 바꾸세요. `source`는 job 파일 기준 상대 경로입니다. context와 outputs는 source 기준 명시적 상대 파일 경로입니다. 와일드카드, 숨김 파일, 심볼릭 링크를 받지 않습니다. `checks`는 셸 문자열 대신 명령 인자 배열입니다.
+One CLI pilot on September 7, 2026, compared the same Cache Lab contract and 11 checks:
 
-좋은 계약에는 함수 이름·입출력, 수정할 파일, 오류 처리와 완료 기준이 들어갑니다. 서로 의존하는 파일은 같은 작업자에게 맡기거나 계약을 먼저 고정하세요. 단순한 한 파일 수정에는 `mode: "solo"`가 더 나을 수 있습니다.
+| | Astra + Luna | Astra solo + review |
+|---|---:|---:|
+| Total input + output tokens | 84,729 | 48,180 |
+| Cached input tokens | 0 | 0 |
+| Standard API equivalent | $0.5204534 | $0.6716800 |
+| Checks | 11/11 | 11/11 |
 
-- `maxWorkers`: 동시에 독립 작업을 실행할 수 있는 상한. 최대 4.
-- `maxCalls`: 계획·구현·수정·리뷰를 모두 포함하는 호출 상한.
-- `maxRepairs`: 테스트 또는 리뷰 실패 이후의 수정 라운드 상한.
-- `maxPromptChars`: 각 요청에 전달하는 **글자 수** 상한. 토큰 제한이 아닙니다.
-- `stopAfterTokens`: 완료 호출에서 관측한 토큰 합을 기준으로 다음 호출을 차단하는 한도. 진행 중 호출과 병렬 호출 때문에 초과할 수 있으며 결제 상한이 아닙니다.
-- `timeoutSeconds`: 각 CLI 호출 및 검사 제한 시간.
+In this pair, the team used **75.9% more tokens** but had a **22.5% lower API-equivalent cost** because work was routed to a cheaper model. This is one uncontrolled comparison, **not a native-mode benchmark or evidence of cache savings**. Two earlier development failures cost another $0.45233 equivalent and are published separately. See [results and limitations](docs/live-results.md), [protocol](docs/experiment-protocol.md), and [original receipts](examples/published/).
 
-## 사용량을 읽는 법
+CLI reports use recorded input, cached-read, cached-write, and output fields with a dated Standard API price table. Reasoning output is already part of output. Missing fields or insufficient per-request context information limit the estimate. These are not ChatGPT subscription bills, quota percentages, or total project costs. Check [official pricing](https://developers.openai.com/api/docs/pricing) and [prompt caching](https://developers.openai.com/api/docs/guides/prompt-caching) before comparing costs.
 
-`receipt.json`과 HTML은 **실측 토큰을 공식 Standard API 요금으로 환산**합니다. ChatGPT 구독 청구서나 한도 사용률을 뜻하지 않습니다. 원문: [API 요금](https://developers.openai.com/api/docs/pricing), [캐시 요금 계산](https://developers.openai.com/api/docs/guides/prompt-caching).
+Every CLI role starts a fresh request. Different prompts, tools, schemas, or prefixes can prevent cache reuse. This project does not implement API `configuration_update` or repair Codex cache behavior. Native usage is reported only when exposed by the host; the CLI pilot's figures are never substituted for it.
 
-입력은 일반 입력 + 캐시 읽기 + 캐시 쓰기를 포함합니다. reasoning output은 output의 일부이므로 다시 더하지 않습니다. 캐시 쓰기 필드가 빠지면 범위를 표시하고, 전체 입력이 272K를 초과하면 요청별 문맥 크기 없이는 정확한 비용을 계산하지 않습니다. 모델 이름은 실제 고정한 CLI 인자이며 서버 내부 모델을 별도로 증명하는 값은 아닙니다. 단가는 2026-09-07 기준이며 최신 가격과 처리 등급을 확인해야 합니다.
+## Execution and data
 
-각 역할은 매번 새 CLI 요청을 사용합니다. 같은 모델·추론 설정을 고정해도 서로 다른 역할/도구/출력 스키마/접두사 때문에 캐시가 재사용되지 않을 수 있습니다. API의 `configuration_update`를 구현하거나 Codex 캐시 문제를 수정하는 도구는 아닙니다.
+Native agents use host tools and permissions. Their file ownership is an instruction plus diff inspection, not a filesystem boundary. A requested read-only reviewer profile can be broadened by live host overrides.
 
-## 데이터와 실행 범위
+The CLI sends the goal and selected context to Codex. It requests no tool use and a read-only sandbox for model calls, but that is not isolation from all file reads. Declared checks execute generated code on the host. Use trusted tasks and disposable, version-controlled workspaces. `.runs/` contains prompts, responses, and diagnostic logs and is gitignored. There is no automatic upload or analytics; select artifacts deliberately before sharing them.
 
-선택한 context와 목표는 Codex에 전송됩니다. 모델에는 도구를 쓰지 않도록 지시하고 읽기 전용 Codex 샌드박스를 사용하지만, 이는 모든 파일 읽기를 봉쇄하는 보안 격리가 아닙니다. 선언한 `checks`는 생성 코드를 **호스트에서 실행**합니다. 신뢰하는 작업과 폐기 가능한 작업 사본에서 쓰고, 비밀이 있는 프로젝트는 별도 검토하세요.
+## Development and references
 
-`.runs/`에는 프롬프트·응답·진단 로그가 있으며 gitignore에 포함됩니다. 자동 업로드나 분석 수집은 없습니다. 다른 사람에게 결과를 공유하기 전 허용할 파일을 직접 고르세요.
+- [Contributing](CONTRIBUTING.md)
+- [Native skill](plugins/astra-orchestrator/skills/astra-orchestrator/SKILL.md) and [installer](plugins/astra-orchestrator/scripts/install-native.mjs)
+- [CLI validation and pricing](src/core.mjs) and [runner](src/runner.mjs)
+- [Native validation evidence](docs/native-validation.md)
 
-## 실제 파일과 재현
+Inspired by the role separation in [donvito/codex-astra-luna-orchestrator](https://github.com/donvito/codex-astra-luna-orchestrator), which provides native Codex configuration, skills, and usage tools under Apache-2.0. The original comparison used commit `f1de1b8729c8ccfb7978321b4764c58bd34c8493`. [DannyMac180/sol-advisor](https://github.com/DannyMac180/sol-advisor) provides another selective-delegation approach with a Sol primary and Luna/Terra workers. Its plugin-plus-companion-role pattern informed the installation UX. This implementation was written independently; neither project endorses it.
 
-- [실험 조건](docs/experiment-protocol.md)
-- [예제 계약](examples/cache-lab/seed/CONTRACT.md)
-- [핵심 검증과 요금 계산](src/core.mjs)
-- [실행기](src/runner.mjs)
-
-[실측 예제](examples/published/)와 [결과 설명](docs/live-results.md)을 함께 공개합니다. 같은 계약·검사를 통과한 한 쌍에서 분업 $0.5205, 단독 $0.6717로 환산됐습니다. 개발 중 실패 비용 $0.4523은 따로 공개하며, 작은 표본의 관측값을 보편적 절약률로 해석하지 않습니다.
-
-## 참고와 라이선스
-
-[donvito/codex-astra-luna-orchestrator](https://github.com/donvito/codex-astra-luna-orchestrator)의 역할 분리 아이디어를 참고했습니다. 해당 프로젝트는 네이티브 Codex 설정·스킬과 사용량 도구를 제공하며 Apache-2.0입니다. 비교한 커밋은 `f1de1b8729c8ccfb7978321b4764c58bd34c8493`입니다. 이 저장소의 실행기와 검증 코드는 독립적으로 작성했습니다.
-
-또 다른 접근인 [DannyMac180/sol-advisor](https://github.com/DannyMac180/sol-advisor)는 Sol을 중심으로 필요한 경우만 Luna/Terra에 위임합니다. 작은 일에는 분업하지 않는 선택도 비용 관리입니다. 어느 프로젝트도 이 저장소를 보증하거나 제휴하지 않습니다.
-
-MIT License. 가격 절감률이나 결과 품질을 보장하지 않습니다.
+MIT License.

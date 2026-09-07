@@ -1,0 +1,29 @@
+{
+  "name": "astra-orchestrator",
+  "version": "0.2.0",
+  "description": "Native Astra planning and review with focused Luna implementation in Codex.",
+  "author": {
+    "name": "Dante",
+    "url": "https://github.com/dante01yoon"
+  },
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Astra Orchestrator",
+    "shortDescription": "Astra plans and reviews; Luna implements.",
+    "longDescription": "Coordinate implementation through native Codex subagents with focused file contracts, actual validation and independent review. Includes project-scoped role installation.",
+    "developerName": "Dante",
+    "category": "Productivity",
+    "capabilities": [],
+    "defaultPrompt": "Use $astra-orchestrator to implement this change with focused Luna tasks and an independent Astra review."
+  },
+  "repository": "https://github.com/dante01yoon/astra-orchestrator",
+  "homepage": "https://github.com/dante01yoon/astra-orchestrator",
+  "license": "MIT",
+  "keywords": [
+    "codex",
+    "astra",
+    "luna",
+    "orchestration",
+    "skills"
+  ]
+}

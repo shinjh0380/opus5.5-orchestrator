@@ -1,0 +1,2 @@
+# CSV serializer
+Create csv.mjs exporting toCsv(rows). Accept an array of arrays containing only strings. Return comma-separated rows joined by CRLF; do not add a trailing newline. Quote cells containing comma, quote, CR or LF and double embedded quotes. Empty input returns an empty string. Reject non-arrays, non-array rows and non-string cells with TypeError. No external dependencies. Do not alter this contract or csv.test.mjs.
