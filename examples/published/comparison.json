@@ -1,0 +1,48 @@
+{
+  "asOf": "2026-09-07",
+  "cliVersion": "0.153.4",
+  "protocol": "docs/experiment-protocol.md",
+  "samplesPerArm": 1,
+  "cacheControlled": false,
+  "sequence": [
+    "team",
+    "solo"
+  ],
+  "totals": {
+    "team": {
+      "status": "accepted",
+      "input": 77697,
+      "output": 7032,
+      "cached": 0,
+      "usd": 0.5204534000000001,
+      "wallSeconds": 140.838
+    },
+    "solo": {
+      "status": "accepted",
+      "input": 43433,
+      "output": 4747,
+      "cached": 0,
+      "usd": 0.6716799999999999,
+      "wallSeconds": 156.849
+    },
+    "development-failure-01": {
+      "status": "failed",
+      "input": 19260,
+      "output": 1210,
+      "cached": 0,
+      "usd": 0.2531,
+      "wallSeconds": 46.199
+    },
+    "development-failure-02": {
+      "status": "failed",
+      "input": 19348,
+      "output": 115,
+      "cached": 0,
+      "usd": 0.19923,
+      "wallSeconds": 7.717
+    }
+  },
+  "operatingCostDifferencePercent": 22.51467960933776,
+  "developmentFailuresUsd": 0.45233,
+  "scope": "Completed runs only for operating comparison; engineering failures separately included. Not a general benchmark, subscription bill, whole project production cost or cache optimization result."
+}

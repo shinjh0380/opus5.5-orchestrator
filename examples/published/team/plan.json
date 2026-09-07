@@ -1,0 +1,29 @@
+{
+  "rationale": "Two independent workers own one output each and share an explicit module contract, allowing arithmetic and UI implementation without file conflicts or inter-worker dependencies.",
+  "tasks": [
+    {
+      "id": "calculator",
+      "objective": "Create calculator.mjs only. Export RATES, calculateCost({model,input,cached,write,output}) and breakEvenReuse(model). RATES has own keys astra={input:10,cached:1,write:12.5,output:50} and luna={input:0.2,cached:0.02,write:0.25,output:1.2}, in USD per million tokens. calculateCost returns {ordinaryInput,inputCost,outputCost,totalCost,cacheHitRate}: ordinaryInput=input-cached-write; inputCost=(ordinaryInput*rate.input+cached*rate.cached+write*rate.write)/1000000; outputCost=output*rate.output/1000000; totalCost=inputCost+outputCost; cacheHitRate=input===0?0:cached/input. Validate finite nonnegative safe-integer counts, cached+write<=input, input<=272000 and own-key model membership; throw descriptive Korean Errors for invalid arguments. Preserve internal precision and count output once. breakEvenReuse returns the minimum integer r>=0 satisfying rate.write+r*rate.cached<(r+1)*rate.input, yielding 1 for both models; reject unknown models. Use no dependencies or network calls.",
+      "files": [
+        "calculator.mjs"
+      ],
+      "context": [
+        "CONTRACT.md",
+        "calculator.test.mjs"
+      ],
+      "acceptance": "Module implements the exact exports and formulas. Expected totals include Astra warm $0.38, Astra cold $1.35, Luna warm $0.008 and mixed-token Astra $0.074. Invalid counts, overlapping subsets, excessive context and prototype model keys throw. Both break-even results equal 1. Validate against the supplied arithmetic tests when execution is available; report only checks actually performed."
+    },
+    {
+      "id": "interface",
+      "objective": "Create index.html only as a polished Korean editorial dashboard using charcoal/navy, warm off-white and mint, responsive at 390px and 1280px. Import {RATES,calculateCost,breakEvenReuse} from './calculator.mjs' in a module script. Shared API: RATES astra={input:10,cached:1,write:12.5,output:50}, luna={input:0.2,cached:0.02,write:0.25,output:1.2}; calculateCost accepts numeric {model,input,cached,write,output} and returns {ordinaryInput,inputCost,outputCost,totalCost,cacheHitRate}, throwing on invalid counts, overlapping subsets, input>272000 or unknown models; breakEvenReuse(model) returns 1 for both models. Build actual labeled controls with ids model,input,cached,write,output and defaults astra/100000/80000/0/2000. Recalculate immediately on input/change, rejecting empty fields rather than coercing them to zero. Render total in #total with '$' and at least four decimals, itemized ordinary/read/write/output costs in #breakdown, cache share, a segmented explanatory visualization and a strictly-cheaper-after-one-reuse explanation. Handle errors in #error with aria-live and clear stale totals, breakdowns and derived visuals. Provide type=button presets #preset-warm=100000/80000/0/2000, #preset-cold=100000/0/100000/2000 and #preset-plain=100000/0/0/2000, retaining the selected model. Explain input includes ordinary, cached and written tokens, caching reduces repeated input processing rather than output generation, and values are hypothetical calculations, not measured performance. Show the supplied pricing source link, 2026-09-07 rate date, direct API Standard rates, input<=272K scope and exclusions for tools, taxes and subscription charges. All visible copy is Korean except model names/code. Use inline CSS, system fonts, accessible keyboard controls and no external dependencies, fetched assets, network calls or robot/space decoration.",
+      "files": [
+        "index.html"
+      ],
+      "context": [
+        "CONTRACT.md",
+        "calculator.test.mjs"
+      ],
+      "acceptance": "All required ids, labels, preset types, local module import and live validation are present. Initial Astra total displays $0.3800 or greater precision; switching to Luna displays $0.0080 or greater precision. Presets preserve the model and immediately update results. Invalid or blank inputs remove stale valid results; valid corrections recover immediately. Zero costs render without invalid bar dimensions. All four cost categories, cache share, reuse explanation and pricing assumptions are readable. Layout has no horizontal overflow at 390px or 1280px. Verify supplied UI assertions and browser behavior when execution is available; do not claim unperformed tests."
+    }
+  ]
+}

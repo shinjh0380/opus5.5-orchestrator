@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>캐시 랩 · 토큰 비용 계산기</title>
+<style>
+:root{color-scheme:light;--paper:#f5f3eb;--ink:#19262c;--muted:#576567;--line:#d5d9d1;--mint:#aff1cf;--read:#287b64;--write:#bc8238;--out:#7987ba}*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font-family:system-ui,-apple-system,'Segoe UI',sans-serif;line-height:1.6}main{max-width:1200px;margin:auto;padding:30px 32px 40px}header{display:flex;justify-content:space-between;gap:16px;align-items:center;border-bottom:1px solid var(--line);padding-bottom:19px;font-size:13px}header strong{font-size:18px;letter-spacing:-.5px}.mark{display:inline-block;width:12px;height:12px;background:var(--read);margin-right:9px;border-radius:3px}.eyebrow{font-size:12px;font-weight:750;letter-spacing:1.5px;color:var(--read)}.intro{padding:40px 0 28px}h1{font-size:clamp(32px,4.6vw,56px);line-height:1.18;letter-spacing:-2px;margin:12px 0 18px}p{margin:0} .intro p{color:var(--muted);max-width:670px} .layout{display:grid;grid-template-columns:1.05fr 1fr;gap:24px;align-items:start}.panel{border:1px solid var(--line);border-radius:20px;background:#fffefa;padding:28px}h2{font-size:19px;margin:0 0 20px;letter-spacing:-.5px}.step{font-size:12px;color:var(--read);margin-right:10px}label{display:block;font-size:14px;font-weight:650;margin-bottom:7px}input,select{width:100%;min-width:0;border:1px solid #aeb9b3;background:#fff;color:var(--ink);border-radius:9px;padding:12px;font:inherit;min-height:48px}input{font-variant-numeric:tabular-nums}input:focus-visible,select:focus-visible,button:focus-visible,a:focus-visible{outline:3px solid #379e7e;outline-offset:3px}input[aria-invalid="true"]{border-color:#ab3030}.field{margin-bottom:18px}.hint{display:block;font-size:12px;color:var(--muted);margin-top:6px}.fields{display:grid;grid-template-columns:1fr 1fr;gap:0 16px}.presets{display:flex;gap:7px;flex-wrap:wrap;margin:0 0 24px}button{font:inherit;font-size:13px;cursor:pointer;border:1px solid #bcc9c1;background:#edf3ed;color:var(--ink);border-radius:7px;padding:9px 12px;min-height:42px}button:hover{background:#d9eee1}.preset-label{font-size:12px;color:var(--muted);margin:18px 0 7px}.equation{font-size:13px;padding:13px;background:#f0f2eb;border-radius:9px}#error{color:#a32323;font-size:13px;min-height:24px;margin-top:12px}.result{background:#19262c;color:#f5f3eb;border:0}.result .step{color:var(--mint)}.result h2{margin-bottom:26px}.total-label{font-size:13px;color:#c0ceca}#total{display:block;color:var(--mint);font-size:clamp(30px,4.4vw,52px);font-weight:650;letter-spacing:-1.5px;line-height:1.3;overflow-wrap:anywhere;font-variant-numeric:tabular-nums;margin:8px 0}.small{font-size:12px;color:#b6c5c0}.bar{height:13px;border-radius:5px;overflow:hidden;display:flex;background:#39474c;margin:27px 0 17px}.bar span{height:100%;min-width:0}.ordinary{background:#b6c5c0}.read{background:var(--mint)}.write{background:#dfac68}.output{background:#a8b6eb}#breakdown{margin:0}#breakdown>div{display:flex;justify-content:space-between;gap:12px;padding:11px 0;border-bottom:1px solid #39474c;font-size:14px}dt{min-width:0}dd{margin:0;text-align:right;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:8px}.tokens{display:block;color:#b6c5c0;font-size:12px;padding-left:16px}.stats{margin-top:23px;padding:17px;background:#25383c;border-radius:10px;font-size:13px}.stats strong{color:var(--mint)}#breakeven{margin-top:9px}.lesson{padding:24px 3px 0}.lesson h2{margin-bottom:8px;font-size:17px}.lesson p{font-size:14px;color:var(--muted)}.rates{margin-top:30px;padding-top:22px;border-top:1px solid var(--line)}.rates h2{margin-bottom:12px}table{width:100%;border-collapse:collapse;font-size:13px;text-align:right}caption{text-align:left;color:var(--muted);font-size:12px;margin-bottom:8px}th,td{padding:10px 6px;border-bottom:1px solid var(--line)}th:first-child,td:first-child{text-align:left}footer{font-size:12px;color:var(--muted);margin-top:22px}footer a{color:var(--read);text-underline-offset:3px}footer p+p{margin-top:6px}@media(max-width:720px){main{padding:20px 18px 28px}.intro{padding-top:28px}.layout{grid-template-columns:1fr}.panel{padding:22px}.fields{gap:0 12px}header{align-items:start}header span:last-child{max-width:150px;text-align:right}h1{letter-spacing:-1.2px}th,td{padding:9px 3px;font-size:12px}}
+</style>
+</head>
+<body>
+<main>
+<header><strong><span class="mark" aria-hidden="true"></span>캐시 랩</strong><span>토큰을 이해하는 작은 계산실</span></header>
+<section class="intro"><div class="eyebrow">비용의 구조를 읽다</div><h1>같은 입력, 다시 쓸 때<br>비용은 어떻게 달라질까요?</h1><p>일반 입력부터 캐시 읽기·쓰기, 출력까지. 토큰을 나누어 넣고 요청 한 번의 예상 비용을 확인하세요. 아래 숫자는 실측 성능이 아닌 가상 계산입니다.</p></section>
+<div class="layout">
+<section class="panel" aria-labelledby="controls-title">
+<h2 id="controls-title"><span class="step">01</span>요청 구성하기</h2>
+<div class="field"><label for="model">모델</label><select id="model"><option value="astra">Astra</option><option value="luna">Luna</option></select></div>
+<p class="preset-label">예시 불러오기 · 현재 모델 유지</p>
+<div class="presets"><button type="button" id="preset-warm">캐시 읽기 80%</button><button type="button" id="preset-cold">첫 캐시 쓰기</button><button type="button" id="preset-plain">캐시 없이</button></div>
+<div class="field"><label for="input">전체 입력 토큰</label><input id="input" type="number" min="0" max="272000" step="1" value="100000" aria-describedby="input-help"><span class="hint" id="input-help">캐시 읽기·쓰기를 포함한 합계 · 최대 272,000</span></div>
+<div class="fields">
+<div class="field"><label for="cached">캐시 읽기 토큰</label><input id="cached" type="number" min="0" step="1" value="80000" aria-describedby="cached-help"><span class="hint" id="cached-help">입력 중 기존 캐시를 읽는 부분</span></div>
+<div class="field"><label for="write">캐시 쓰기 토큰</label><input id="write" type="number" min="0" step="1" value="0" aria-describedby="write-help"><span class="hint" id="write-help">입력 중 캐시에 처음 쓰는 부분</span></div>
+</div>
+<div class="field"><label for="output">출력 토큰</label><input id="output" type="number" min="0" step="1" value="2000" aria-describedby="output-help"><span class="hint" id="output-help">추론 출력을 포함한 전체 출력 · 별도로 중복 합산하지 않음</span></div>
+<p class="equation">전체 입력 = 일반 입력 + 캐시 읽기 + 캐시 쓰기</p>
+<div id="error" role="status" aria-live="polite"></div>
+</section>
+<div>
+<section class="panel result" aria-labelledby="result-title">
+<h2 id="result-title"><span class="step">02</span>예상 비용 살펴보기</h2>
+<p class="total-label">요청 1회 합계 · 미국 달러</p><output id="total" aria-live="polite" aria-atomic="true">—</output>
+<p class="small">표시 금액만 반올림하며, 계산값은 반올림하지 않습니다.</p>
+<div class="bar" id="cost-bar" aria-hidden="true"><span class="ordinary"></span><span class="read"></span><span class="write"></span><span class="output"></span></div>
+<dl id="breakdown"></dl>
+<div class="stats"><p id="share">캐시 읽기 비중 —</p><p id="breakeven"></p></div>
+</section>
+<section class="lesson"><h2>캐시는 입력을 아껴요. 출력은 따로 계산해요.</h2><p>캐시 읽기는 반복되는 입력의 처리 비용을 줄입니다. 새로 생성하는 출력에는 출력 단가가 그대로 적용됩니다. 캐시 쓰기 토큰에는 쓰기 단가만 적용하며 일반 입력 비용을 다시 더하지 않습니다.</p></section>
+</div>
+</div>
+<section class="rates" aria-labelledby="rates-title"><h2 id="rates-title">계산에 사용한 단가</h2><table><caption>직접 API Standard · 100만 토큰당 미국 달러</caption><thead><tr><th scope="col">모델</th><th scope="col">일반 입력</th><th scope="col">캐시 읽기</th><th scope="col">캐시 쓰기</th><th scope="col">출력</th></tr></thead><tbody id="rate-rows"></tbody></table></section>
+<footer><p>단가 확인일: 2026-09-07 · <a href="https://developers.openai.com/api/docs/pricing">공식 API 가격 출처</a> · Standard · 요청당 입력 ≤272K 범위</p><p>272,000토큰을 초과하는 입력은 계산하지 않습니다. 도구 비용·세금·구독 요금은 제외하며, 구독 크레딧으로 환산하지 않습니다. 실제 캐시 적용 여부나 유효 기간은 이 계산기의 가정에 포함되지 않습니다.</p></footer>
+<noscript><p>계산기를 사용하려면 자바스크립트를 활성화하세요.</p></noscript>
+</main>
+<script type="module">
+import { RATES, calculateCost, breakEvenReuse } from './calculator.mjs';
+const byId = id => document.getElementById(id);
+const fields = ['input', 'cached', 'write', 'output'];
+const names = ['일반 입력', '캐시 읽기', '캐시 쓰기', '출력'];
+const classes = ['ordinary', 'read', 'write', 'output'];
+const money = value => '$' + value.toLocaleString('ko-KR', { minimumFractionDigits: 6, maximumFractionDigits: 6 });
+const count = value => value.toLocaleString('ko-KR');
+for (const [key, rate] of Object.entries(RATES)) {
+  const row = document.createElement('tr');
+  const heading = document.createElement('th');
+  heading.scope = 'row';
+  heading.textContent = key === 'astra' ? 'Astra' : 'Luna';
+  row.append(heading);
+  for (const field of ['input', 'cached', 'write', 'output']) {
+    const cell = document.createElement('td');
+    cell.textContent = '$' + rate[field];
+    row.append(cell);
+  }
+  byId('rate-rows').append(row);
+}
+function update() {
+  fields.forEach(id => byId(id).removeAttribute('aria-invalid'));
+  try {
+    const values = { model: byId('model').value };
+    for (const id of fields) {
+      values[id] = byId(id).value.trim() === '' ? NaN : byId(id).valueAsNumber;
+      if (!Number.isSafeInteger(values[id]) || values[id] < 0) byId(id).setAttribute('aria-invalid', 'true');
+    }
+    if (values.input > 272000) byId('input').setAttribute('aria-invalid', 'true');
+    if (values.cached + values.write > values.input) {
+      byId('cached').setAttribute('aria-invalid', 'true');
+      byId('write').setAttribute('aria-invalid', 'true');
+    }
+    const result = calculateCost(values);
+    const rate = RATES[values.model];
+    const tokens = [result.ordinaryInput, values.cached, values.write, values.output];
+    const costs = [tokens[0] * rate.input / 1e6, tokens[1] * rate.cached / 1e6, tokens[2] * rate.write / 1e6, result.outputCost];
+    byId('total').textContent = money(result.totalCost);
+    byId('error').textContent = '';
+    byId('breakdown').replaceChildren();
+    costs.forEach((cost, i) => {
+      const row = document.createElement('div');
+      const term = document.createElement('dt');
+      const dot = document.createElement('span');
+      dot.className = 'dot ' + classes[i];
+      dot.setAttribute('aria-hidden', 'true');
+      term.append(dot, names[i]);
+      const detail = document.createElement('span');
+      detail.className = 'tokens';
+      detail.textContent = count(tokens[i]) + '토큰';
+      term.append(detail);
+      const amount = document.createElement('dd');
+      amount.textContent = money(cost);
+      row.append(term, amount);
+      byId('breakdown').append(row);
+      byId('cost-bar').children[i].style.width = (result.totalCost === 0 ? 0 : cost / result.totalCost * 100) + '%';
+    });
+    byId('share').textContent = '전체 입력 중 캐시 읽기 비중 ' + (result.cacheHitRate * 100).toLocaleString('ko-KR', { maximumFractionDigits: 2 }) + '%';
+    byId('breakeven').textContent = `첫 쓰기 후 ${breakEvenReuse(values.model)}회 재사용부터 더 저렴합니다. 동일한 길이의 0보다 큰 입력을 매번 새로 처리하는 경우와 비교하며, 출력은 같고 추가 쓰기는 없다고 가정합니다.`;
+  } catch (error) {
+    byId('total').textContent = '—';
+    byId('breakdown').replaceChildren();
+    byId('share').textContent = '캐시 읽기 비중 —';
+    byId('breakeven').textContent = '입력값을 수정하면 비용과 재사용 기준이 표시됩니다.';
+    for (const segment of byId('cost-bar').children) segment.style.width = '0%';
+    byId('error').textContent = error.message;
+  }
+}
+for (const id of ['model', ...fields]) {
+  byId(id).addEventListener('input', update);
+  byId(id).addEventListener('change', update);
+}
+for (const [name, values] of Object.entries({ warm: [100000, 80000, 0, 2000], cold: [100000, 0, 100000, 2000], plain: [100000, 0, 0, 2000] })) {
+  byId('preset-' + name).addEventListener('click', () => {
+    fields.forEach((id, i) => { byId(id).value = values[i]; });
+    update();
+  });
+}
+update();
+</script>
+</body>
+</html>

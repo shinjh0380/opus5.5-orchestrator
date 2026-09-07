@@ -1,0 +1,5 @@
+{
+  "verdict": "accept",
+  "summary": "No material correctness or security defects found. The candidate satisfies the calculation and UI contract; supplied host checks report all 11 tests passing.",
+  "findings": []
+}

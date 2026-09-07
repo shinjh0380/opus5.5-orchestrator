@@ -1,0 +1,19 @@
+{
+  "goal": "Build Cache Lab, a polished Korean interactive web calculator that teaches ordinary input, cache reads, cache writes and output costs. Follow CONTRACT.md exactly. Deliver calculator.mjs and index.html. No dependencies or external network assets. Correct arithmetic, transparent assumptions, responsive readable UI, accessible labels and immediate recalculation are essential.",
+  "source": "seed",
+  "mode": "team",
+  "context": ["CONTRACT.md", "calculator.test.mjs"],
+  "outputs": ["calculator.mjs", "index.html"],
+  "checks": [["node", "--test", "calculator.test.mjs"]],
+  "maxWorkers": 2,
+  "maxCalls": 8,
+  "maxRepairs": 1,
+  "maxPromptChars": 55000,
+  "stopAfterTokens": 250000,
+  "timeoutSeconds": 240,
+  "models": {
+    "planner": {"model": "gpt-6-astra", "effort": "low"},
+    "worker": {"model": "gpt-5.6-luna", "effort": "medium"},
+    "reviewer": {"model": "gpt-6-astra", "effort": "low"}
+  }
+}

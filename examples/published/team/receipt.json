@@ -1,0 +1,138 @@
+{
+  "version": 1,
+  "status": "accepted",
+  "startedAt": "2026-09-07T10:39:25.866Z",
+  "goal": "Build Cache Lab, a polished Korean interactive web calculator that teaches ordinary input, cache reads, cache writes and output costs. Follow CONTRACT.md exactly. Deliver calculator.mjs and index.html. No dependencies or external network assets. Correct arithmetic, transparent assumptions, responsive readable UI, accessible labels and immediate recalculation are essential.",
+  "calls": [
+    {
+      "id": "plan",
+      "role": "planner",
+      "modelRequested": "gpt-6-astra",
+      "effort": "low",
+      "startedAt": "2026-09-07T10:39:25.867Z",
+      "seconds": 35.2,
+      "promptChars": 7096,
+      "promptSha256": "68f2f646f699e336da17624cf601987e0de9a0daf16a107a92ff4e439dafb9b0",
+      "usage": {
+        "input_tokens": 19313,
+        "cached_input_tokens": 0,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 1036,
+        "reasoning_output_tokens": 0
+      },
+      "price": {
+        "kind": "standard-equivalent",
+        "usd": 0.24493
+      },
+      "exitCode": 0,
+      "timedOut": false,
+      "modelEvidence": "Pinned CLI --model argument; JSONL does not independently attest backend model"
+    },
+    {
+      "id": "calculator",
+      "role": "worker",
+      "modelRequested": "gpt-5.6-luna",
+      "effort": "medium",
+      "startedAt": "2026-09-07T10:40:01.073Z",
+      "seconds": 17.682,
+      "promptChars": 8310,
+      "promptSha256": "18e03d05ec31ba9992899ee91805b262a73e4445d4223fe8734b4f3881071798",
+      "usage": {
+        "input_tokens": 16603,
+        "cached_input_tokens": 0,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 814,
+        "reasoning_output_tokens": 199
+      },
+      "price": {
+        "kind": "standard-equivalent",
+        "usd": 0.004297400000000001
+      },
+      "exitCode": 0,
+      "timedOut": false,
+      "modelEvidence": "Pinned CLI --model argument; JSONL does not independently attest backend model"
+    },
+    {
+      "id": "interface",
+      "role": "worker",
+      "modelRequested": "gpt-5.6-luna",
+      "effort": "medium",
+      "startedAt": "2026-09-07T10:40:01.071Z",
+      "seconds": 92.207,
+      "promptChars": 9456,
+      "promptSha256": "b9f7734cc1de3f62eea6016833a14d5efe2f2e71c2a0d14e3ece7a5b00ff6fed",
+      "usage": {
+        "input_tokens": 16832,
+        "cached_input_tokens": 0,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 4933,
+        "reasoning_output_tokens": 53
+      },
+      "price": {
+        "kind": "standard-equivalent",
+        "usd": 0.009286
+      },
+      "exitCode": 0,
+      "timedOut": false,
+      "modelEvidence": "Pinned CLI --model argument; JSONL does not independently attest backend model"
+    },
+    {
+      "id": "review-0",
+      "role": "reviewer",
+      "modelRequested": "gpt-6-astra",
+      "effort": "low",
+      "startedAt": "2026-09-07T10:41:33.362Z",
+      "seconds": 13.332,
+      "promptChars": 24498,
+      "promptSha256": "98ee011623cf4cca209eb25edcd602ccacb4c66c7a97e377cac1477dbbb66c6e",
+      "usage": {
+        "input_tokens": 24949,
+        "cached_input_tokens": 0,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 249,
+        "reasoning_output_tokens": 198
+      },
+      "price": {
+        "kind": "standard-equivalent",
+        "usd": 0.26194
+      },
+      "exitCode": 0,
+      "timedOut": false,
+      "modelEvidence": "Pinned CLI --model argument; JSONL does not independently attest backend model"
+    }
+  ],
+  "checks": [
+    {
+      "round": 0,
+      "argv": [
+        "node",
+        "--test",
+        "calculator.test.mjs"
+      ],
+      "exitCode": 0,
+      "passed": true,
+      "stdout": "✔ Astra warm: cached input is a subset, output counted once (0.764834ms)\n✔ cache writes replace ordinary input instead of adding 125% twice (0.054125ms)\n✔ Luna same token mix uses its own prices (0.044125ms)\n✔ mixed reads+writes+ordinary (0.085208ms)\n✔ zero input and nonzero output (0.044083ms)\n✔ reject negative, fractional, nonfinite, string and missing counts (0.184583ms)\n✔ reject overlapping subsets and long context (0.05475ms)\n✔ model keys do not accept prototype properties (0.071333ms)\n✔ one reuse beats two ordinary reads (0.049375ms)\n✔ hundred deterministic mixed cases follow the declared rates (0.153416ms)\n✔ UI includes required accessible controls and local module (0.281583ms)\nℹ tests 11\nℹ suites 0\nℹ pass 11\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 40.761042\n",
+      "stderr": ""
+    }
+  ],
+  "baseline": {
+    "CONTRACT.md": "12c16398e0305264c657c6771cb83c316cae9f51b0de3da507b2ce4b7106f84c",
+    "calculator.test.mjs": "3f0c187d5d1beb1e24ddce2e5d0576172890a4e25b806d0850a4283f43fc2f9c",
+    "calculator.mjs": null,
+    "index.html": null
+  },
+  "outputs": [
+    "calculator.mjs",
+    "index.html"
+  ],
+  "pricing": {
+    "asOf": "2026-09-07",
+    "url": "https://developers.openai.com/api/docs/pricing",
+    "assumption": "USD Standard short-context API equivalent; not ChatGPT subscription billing; no external tools or taxes"
+  },
+  "outputHashes": {
+    "calculator.mjs": "f1baeaff65a62da92ef6b0925355d52ba12eb706a146d273494da067ba379116",
+    "index.html": "932301fdfc004a508fb08d5eb1f827dd3d74885437638c81e4eaf6926f268a85"
+  },
+  "finishedAt": "2026-09-07T10:41:46.704Z"
+}

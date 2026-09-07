@@ -1,0 +1,50 @@
+{
+  "version": 1,
+  "status": "failed",
+  "startedAt": "2026-09-07T10:34:52.428Z",
+  "goal": "Build Cache Lab, a polished Korean interactive web calculator that teaches ordinary input, cache reads, cache writes and output costs. Follow CONTRACT.md exactly. Deliver calculator.mjs and index.html. No dependencies or external network assets. Correct arithmetic, transparent assumptions, responsive readable UI, accessible labels and immediate recalculation are essential.",
+  "calls": [
+    {
+      "id": "plan",
+      "role": "planner",
+      "modelRequested": "gpt-6-astra",
+      "effort": "low",
+      "startedAt": "2026-09-07T10:34:52.429Z",
+      "seconds": 46.195,
+      "promptChars": 6928,
+      "promptSha256": "cffe39b2fc1a6d5672bb14c6ef4b8fe75150ef8c555fb4ee40977606080e4df3",
+      "usage": {
+        "input_tokens": 19260,
+        "cached_input_tokens": 0,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 1210,
+        "reasoning_output_tokens": 0
+      },
+      "price": {
+        "kind": "standard-equivalent",
+        "usd": 0.2531
+      },
+      "exitCode": 0,
+      "timedOut": false,
+      "modelEvidence": "Pinned CLI --model argument; JSONL does not independently attest backend model"
+    }
+  ],
+  "checks": [],
+  "baseline": {
+    "CONTRACT.md": "12c16398e0305264c657c6771cb83c316cae9f51b0de3da507b2ce4b7106f84c",
+    "calculator.test.mjs": "3f0c187d5d1beb1e24ddce2e5d0576172890a4e25b806d0850a4283f43fc2f9c",
+    "calculator.mjs": null,
+    "index.html": null
+  },
+  "outputs": [
+    "calculator.mjs",
+    "index.html"
+  ],
+  "pricing": {
+    "asOf": "2026-09-07",
+    "url": "https://developers.openai.com/api/docs/pricing",
+    "assumption": "USD Standard short-context API equivalent; not ChatGPT subscription billing; no external tools or taxes"
+  },
+  "error": "Unlisted context: CONTRACT.md 전체를 준수한다.",
+  "finishedAt": "2026-09-07T10:35:38.627Z"
+}
