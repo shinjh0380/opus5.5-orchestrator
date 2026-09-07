@@ -146,6 +146,7 @@ The CLI sends the goal and selected context to Codex. It requests no tool use an
 - [Native skill](plugins/astra-orchestrator/skills/astra-orchestrator/SKILL.md) and [installer](plugins/astra-orchestrator/scripts/install-native.mjs)
 - [CLI validation and pricing](src/core.mjs) and [runner](src/runner.mjs)
 - [Native validation evidence](docs/native-validation.md)
+- [Recorded feature demo: CSV export](examples/native-cache-lab/)
 
 Inspired by the role separation in [donvito/codex-astra-luna-orchestrator](https://github.com/donvito/codex-astra-luna-orchestrator), which provides native Codex configuration, skills, and usage tools under Apache-2.0. The original comparison used commit `f1de1b8729c8ccfb7978321b4764c58bd34c8493`. [DannyMac180/sol-advisor](https://github.com/DannyMac180/sol-advisor) provides another selective-delegation approach with a Sol primary and Luna/Terra workers. Its plugin-plus-companion-role pattern informed the installation UX. This implementation was written independently; neither project endorses it.
 

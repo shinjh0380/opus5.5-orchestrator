@@ -35,3 +35,7 @@ Token usage and API-equivalent cost are **unavailable** for this native test. Th
 These checks did not alter the user's global Codex installation. Marketplace installation, runtime skill discovery, and explicit native invocation were tested separately. Automatic skill selection during a new desktop conversation and custom-profile routing across every Codex host were not exercised. Official discovery behavior is documented in the [setup guide](native-mode.md); start a new trusted task after installing.
 
 The original CLI runner and its model-call flow remain intact. Public pilot receipt data and generated code are unchanged; report labels were translated into English.
+
+## Recorded feature demo
+
+A later interactive CLI run exercised the installed custom profiles end to end: Astra low → `astra_luna_worker` (Luna medium) → `astra_review` (Astra low). It added real CSV downloads to Cache Lab, passed 14 tests and an independent review, and was checked in a browser with two actual downloads plus an invalid-input case. [Generated files and reproduction instructions](../examples/native-cache-lab/README.md) are public. This adds custom-profile evidence for CLI 0.153.4; it does not establish compatibility with every host.

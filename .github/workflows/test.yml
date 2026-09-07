@@ -15,3 +15,5 @@ jobs:
           node-version: ${{ matrix.node }}
       - run: npm test
       - run: node --test examples/native-smoke/csv.test.mjs
+      - run: node --test calculator.test.mjs export.test.mjs
+        working-directory: examples/native-cache-lab

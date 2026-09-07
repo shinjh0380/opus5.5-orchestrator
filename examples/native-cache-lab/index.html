@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cache Lab — 캐시 비용 계산기</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #17212b;
+      --navy: #1d3040;
+      --muted: #607080;
+      --paper: #f6f3ec;
+      --panel: #fffdf8;
+      --line: #d9ded9;
+      --mint: #a9e3c5;
+      --mint-deep: #23745a;
+      --amber: #efc579;
+      --blue: #88b6d6;
+      --rose: #d99586;
+      --shadow: 0 18px 50px rgba(25, 42, 52, .09);
+    }
+    * { box-sizing: border-box; }
+    html { overflow-x: hidden; }
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.55;
+    }
+    button, input, select { font: inherit; }
+    button, select, input { min-height: 44px; }
+    :focus-visible { outline: 3px solid #357cbd; outline-offset: 3px; }
+    .shell { width: min(1180px, calc(100% - 32px)); margin: 0 auto; }
+    header { padding: 34px 0 24px; border-bottom: 1px solid var(--line); }
+    .eyebrow { margin: 0 0 12px; color: var(--mint-deep); font-size: .77rem; font-weight: 800; letter-spacing: .13em; text-transform: uppercase; }
+    h1 { max-width: 760px; margin: 0; color: var(--navy); font-family: Georgia, "Times New Roman", serif; font-size: clamp(2.45rem, 6vw, 5.4rem); line-height: .98; letter-spacing: -.055em; }
+    .lede { max-width: 690px; margin: 22px 0 0; color: var(--muted); font-size: clamp(1rem, 1.8vw, 1.2rem); }
+    main { padding: 30px 0 70px; }
+    .grid { display: grid; grid-template-columns: minmax(290px, .78fr) minmax(0, 1.22fr); gap: 22px; align-items: start; }
+    .card { background: var(--panel); border: 1px solid var(--line); border-radius: 18px; box-shadow: var(--shadow); }
+    .controls { padding: 24px; }
+    h2, h3 { margin: 0; color: var(--navy); }
+    h2 { font-size: 1.15rem; }
+    h3 { font-size: .95rem; }
+    .hint { margin: 6px 0 21px; color: var(--muted); font-size: .88rem; }
+    .field { margin-top: 15px; }
+    label { display: block; margin-bottom: 7px; color: var(--navy); font-size: .88rem; font-weight: 750; }
+    .field-note { color: var(--muted); font-size: .76rem; font-weight: 500; }
+    input, select { width: 100%; border: 1px solid #bac5c3; border-radius: 10px; background: #fff; color: var(--ink); padding: 9px 11px; }
+    input:invalid { box-shadow: none; }
+    .presets { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 22px; }
+    .presets button { border: 1px solid #aabbb3; border-radius: 9px; background: #edf7f0; color: #205844; cursor: pointer; padding: 8px 5px; font-size: .8rem; font-weight: 750; }
+    .presets button:hover { background: var(--mint); }
+    .error { min-height: 24px; margin: 16px 0 0; color: #a53e36; font-size: .86rem; font-weight: 700; }
+    .results { display: grid; gap: 18px; }
+    .total-card { padding: 25px; background: var(--navy); color: white; border-radius: 18px; box-shadow: var(--shadow); }
+    .total-label { color: #b6c8d1; font-size: .83rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+    #total { margin-top: 7px; color: #f4fff8; font-family: Georgia, "Times New Roman", serif; font-size: clamp(2.4rem, 7vw, 4.8rem); line-height: 1; letter-spacing: -.045em; }
+    .total-note { margin: 12px 0 0; color: #d2dce0; font-size: .88rem; }
+    .export-button { margin-top: 18px; border: 1px solid #b6e8cd; border-radius: 10px; background: #f4fff8; color: var(--navy); cursor: pointer; padding: 10px 14px; font-weight: 800; }
+    .export-button:hover { background: var(--mint); }
+    .breakdown-card, .visual-card, .explain-card { padding: 23px; }
+    .cost-list { display: grid; gap: 0; margin: 14px 0 0; }
+    .cost-row { display: flex; justify-content: space-between; gap: 12px; padding: 11px 0; border-top: 1px solid var(--line); font-size: .92rem; }
+    .cost-row span:first-child { color: var(--muted); }
+    .cost-row strong { color: var(--navy); text-align: right; }
+    .metric { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; margin-top: 18px; padding: 14px; border-radius: 12px; background: #edf7f0; }
+    .metric span { color: var(--muted); font-size: .86rem; }
+    .metric strong { color: var(--mint-deep); }
+    .bar { display: flex; width: 100%; min-height: 24px; margin-top: 18px; overflow: hidden; border-radius: 8px; background: #e7ece9; }
+    .segment { min-width: 0; transition: width .2s ease; }
+    .segment.ordinary { background: var(--amber); }
+    .segment.cached { background: var(--mint); }
+    .segment.written { background: var(--rose); }
+    .segment.output { background: var(--blue); }
+    .legend { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px 16px; margin-top: 15px; color: var(--muted); font-size: .78rem; }
+    .legend span { display: flex; align-items: center; gap: 7px; }
+    .swatch { width: 11px; height: 11px; flex: 0 0 11px; border-radius: 3px; }
+    .swatch.ordinary { background: var(--amber); }
+    .swatch.cached { background: var(--mint); }
+    .swatch.written { background: var(--rose); }
+    .swatch.output { background: var(--blue); }
+    .explain-card { border-left: 5px solid var(--mint-deep); }
+    .explain-card p { margin: 9px 0 0; color: var(--muted); font-size: .91rem; }
+    footer { padding: 22px 0 38px; border-top: 1px solid var(--line); color: var(--muted); font-size: .79rem; }
+    footer p { margin: 6px 0; }
+    footer a { color: var(--mint-deep); font-weight: 700; }
+    @media (max-width: 760px) {
+      .shell { width: min(100% - 24px, 620px); }
+      header { padding-top: 25px; }
+      main { padding-top: 20px; }
+      .grid { grid-template-columns: 1fr; }
+      .controls, .breakdown-card, .visual-card, .explain-card, .total-card { padding: 19px; }
+    }
+    @media (max-width: 390px) {
+      .shell { width: calc(100% - 20px); }
+      .presets { gap: 5px; }
+      .presets button { font-size: .74rem; }
+      .legend { gap: 8px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="shell">
+      <p class="eyebrow">Cache Lab · 비용 구조 읽기</p>
+      <h1>한 번 읽고,<br>다시 쓰는 비용.</h1>
+      <p class="lede">일반 입력, 캐시 읽기, 캐시 쓰기, 출력 비용을 나눠 보며 캐시가 반복 입력 처리 비용을 어떻게 바꾸는지 살펴보세요.</p>
+    </div>
+  </header>
+
+  <main class="shell">
+    <div class="grid">
+      <section class="card controls" aria-labelledby="controls-title">
+        <h2 id="controls-title">계산 조건</h2>
+        <p class="hint">토큰 수를 입력하면 결과가 즉시 다시 계산됩니다.</p>
+
+        <div class="field">
+          <label for="model">모델</label>
+          <select id="model" name="model">
+            <option value="astra">astra</option>
+            <option value="luna">luna</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="input">전체 입력 토큰 <span class="field-note">(캐시 포함)</span></label>
+          <input id="input" name="input" type="number" min="0" max="272000" step="1" value="100000" inputmode="numeric">
+        </div>
+        <div class="field">
+          <label for="cached">캐시 읽기 토큰</label>
+          <input id="cached" name="cached" type="number" min="0" step="1" value="80000" inputmode="numeric">
+        </div>
+        <div class="field">
+          <label for="write">캐시 쓰기 토큰</label>
+          <input id="write" name="write" type="number" min="0" step="1" value="0" inputmode="numeric">
+        </div>
+        <div class="field">
+          <label for="output">출력 토큰</label>
+          <input id="output" name="output" type="number" min="0" step="1" value="2000" inputmode="numeric">
+        </div>
+
+        <div class="presets" aria-label="빠른 입력 프리셋">
+          <button type="button" id="preset-warm">따뜻한 캐시</button>
+          <button type="button" id="preset-cold">첫 저장</button>
+          <button type="button" id="preset-plain">일반 처리</button>
+        </div>
+        <p id="error" class="error" aria-live="polite" role="status"></p>
+      </section>
+
+      <section class="results" aria-live="polite">
+        <div class="total-card">
+          <div class="total-label">예상 요청 비용</div>
+          <div id="total">$0.3800</div>
+          <p class="total-note">가상의 토큰 조합을 사용한 계산값입니다. 측정된 성능이나 실제 청구액이 아닙니다.</p>
+          <button type="button" id="export-csv" class="export-button">CSV로 저장</button>
+        </div>
+
+        <section class="card breakdown-card" aria-labelledby="breakdown-title">
+          <h2 id="breakdown-title">비용 내역</h2>
+          <div id="breakdown" class="cost-list">
+            <div class="cost-row"><span>일반 입력</span><strong>$0.2000</strong></div>
+            <div class="cost-row"><span>캐시 읽기</span><strong>$0.0800</strong></div>
+            <div class="cost-row"><span>캐시 쓰기</span><strong>$0.0000</strong></div>
+            <div class="cost-row"><span>출력</span><strong>$0.1000</strong></div>
+          </div>
+          <div class="metric"><span>입력 중 캐시 비중</span><strong id="cache-share">80.0%</strong></div>
+        </section>
+
+        <section class="card visual-card" aria-labelledby="visual-title">
+          <h2 id="visual-title">토큰 흐름 한눈에 보기</h2>
+          <p class="hint">입력 안에서 캐시된 부분과 새로 처리하는 부분을 분리했습니다.</p>
+          <div class="bar" role="img" aria-label="일반 입력, 캐시 읽기, 캐시 쓰기, 출력 토큰 비율">
+            <span id="bar-ordinary" class="segment ordinary" style="width:20%"></span>
+            <span id="bar-cached" class="segment cached" style="width:80%"></span>
+            <span id="bar-write" class="segment written" style="width:0%"></span>
+            <span id="bar-output" class="segment output" style="width:0%"></span>
+          </div>
+          <div class="legend">
+            <span><i class="swatch ordinary"></i>일반 입력</span>
+            <span><i class="swatch cached"></i>캐시 읽기</span>
+            <span><i class="swatch written"></i>캐시 쓰기</span>
+            <span><i class="swatch output"></i>출력</span>
+          </div>
+        </section>
+
+        <section class="card explain-card" aria-labelledby="explain-title">
+          <h2 id="explain-title">재사용 손익분기</h2>
+          <p id="reuse-explanation">캐시를 처음 쓴 뒤 같은 입력을 1번만 재사용해도, 매번 일반 입력으로 처리하는 것보다 엄격히 저렴해집니다.</p>
+          <p>캐시는 반복되는 입력 처리 비용을 줄이지만 출력 생성 비용은 줄이지 않습니다. 입력 토큰에는 일반 입력, 캐시 읽기, 캐시 쓰기가 포함됩니다.</p>
+        </section>
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    <div class="shell">
+      <p>가격 기준: <a href="https://developers.openai.com/api/docs/pricing" target="_blank" rel="noopener noreferrer">OpenAI API 가격 문서</a> · 2026-09-07 확인 · API Standard 직접 요율</p>
+      <p>입력 토큰 272K 이하 요청을 대상으로 합니다. 도구 사용료, 세금, 구독 요금 및 구독 크레딧은 제외합니다.</p>
+    </div>
+  </footer>
+
+  <script type="module">
+    import { RATES, calculateCost, breakEvenReuse } from './calculator.mjs';
+    import { buildCsv } from './export.mjs';
+
+    const model = document.getElementById('model');
+    const fields = ['input', 'cached', 'write', 'output'].map(id => document.getElementById(id));
+    const total = document.getElementById('total');
+    const breakdown = document.getElementById('breakdown');
+    const error = document.getElementById('error');
+    const share = document.getElementById('cache-share');
+    const reuseExplanation = document.getElementById('reuse-explanation');
+    const exportButton = document.getElementById('export-csv');
+    const bars = {
+      ordinary: document.getElementById('bar-ordinary'),
+      cached: document.getElementById('bar-cached'),
+      write: document.getElementById('bar-write'),
+      output: document.getElementById('bar-output')
+    };
+
+    const money = value => `$${value.toFixed(4)}`;
+    const clearResults = () => {
+      total.textContent = '—';
+      breakdown.innerHTML = '';
+      share.textContent = '—';
+      Object.values(bars).forEach(bar => { bar.style.width = '0%'; });
+    };
+    const readValues = () => {
+      if (!model.value || !Object.prototype.hasOwnProperty.call(RATES, model.value)) throw new Error('모델을 선택해 주세요.');
+      const values = {};
+      for (const field of fields) {
+        if (field.value.trim() === '') throw new Error('모든 토큰 수를 입력해 주세요.');
+        const number = Number(field.value);
+        if (!Number.isSafeInteger(number) || number < 0) throw new Error('토큰 수는 0 이상의 정수여야 합니다.');
+        values[field.id] = number;
+      }
+      return { model: model.value, ...values };
+    };
+    const renderBreakdown = (result, values) => {
+      const rates = RATES[values.model];
+      const costs = [
+        ['일반 입력', result.ordinaryInput, (result.ordinaryInput * rates.input) / 1000000],
+        ['캐시 읽기', values.cached, (values.cached * rates.cached) / 1000000],
+        ['캐시 쓰기', values.write, (values.write * rates.write) / 1000000],
+        ['출력', values.output, result.outputCost]
+      ];
+      breakdown.innerHTML = costs.map(([label, tokens, cost]) => `<div class="cost-row"><span>${label} <small>(${tokens.toLocaleString('ko-KR')} 토큰)</small></span><strong>${money(cost)}</strong></div>`).join('');
+    };
+    const renderBars = values => {
+      const denominator = Math.max(values.input + values.output, 1);
+      bars.ordinary.style.width = `${(Math.max(values.input - values.cached - values.write, 0) / denominator) * 100}%`;
+      bars.cached.style.width = `${(values.cached / denominator) * 100}%`;
+      bars.write.style.width = `${(values.write / denominator) * 100}%`;
+      bars.output.style.width = `${(values.output / denominator) * 100}%`;
+    };
+    const recalculate = () => {
+      try {
+        const values = readValues();
+        const result = calculateCost(values);
+        total.textContent = money(result.totalCost);
+        renderBreakdown(result, values);
+        share.textContent = `${(result.cacheHitRate * 100).toFixed(1)}%`;
+        renderBars(values);
+        const reuse = breakEvenReuse(values.model);
+        reuseExplanation.textContent = `캐시를 처음 쓴 뒤 같은 입력을 ${reuse}번만 재사용해도, 매번 일반 입력으로 처리하는 것보다 엄격히 저렴해집니다.`;
+        error.textContent = '';
+      } catch (problem) {
+        clearResults();
+        error.textContent = problem instanceof Error ? problem.message : '입력값을 확인해 주세요.';
+      }
+    };
+    exportButton.addEventListener('click', () => {
+      try {
+        const values = readValues();
+        const result = calculateCost(values);
+        const rates = RATES[values.model];
+        const csv = buildCsv(values, {
+          ordinaryInput: result.ordinaryInput,
+          ordinaryInputCost: (result.ordinaryInput * rates.input) / 1000000,
+          cachedCost: (values.cached * rates.cached) / 1000000,
+          writeCost: (values.write * rates.write) / 1000000,
+          outputCost: result.outputCost,
+          totalCost: result.totalCost,
+          cacheHitRate: result.cacheHitRate,
+        });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+        link.download = 'cache-lab.csv';
+        link.click();
+        setTimeout(() => URL.revokeObjectURL(link.href), 0);
+      } catch (problem) {
+        recalculate();
+      }
+    });
+    fields.forEach(field => { field.addEventListener('input', recalculate); field.addEventListener('change', recalculate); });
+    model.addEventListener('input', recalculate);
+    model.addEventListener('change', recalculate);
+    const presets = {
+      'preset-warm': [100000, 80000, 0, 2000],
+      'preset-cold': [100000, 0, 100000, 2000],
+      'preset-plain': [100000, 0, 0, 2000]
+    };
+    Object.entries(presets).forEach(([id, values]) => {
+      document.getElementById(id).addEventListener('click', () => {
+        fields.forEach((field, index) => { field.value = values[index]; });
+        recalculate();
+      });
+    });
+    recalculate();
+  </script>
+</body>
+</html>
