@@ -31,11 +31,12 @@ Do not repeat the implementation merely to prove agreement.
   "mode": "native",
   "route": "delegate-and-review",
   "rootModel": "unverified",
-  "workers": [{"role": "astra_luna_worker", "requestedModel": "gpt-5.6-luna", "effort": "medium", "ownedFiles": ["src/export/csv.ts"]}],
+  "workers": [{"subagent": "astra-worker", "requestedModel": "claude-sonnet-5-5", "effort": "medium", "ownedFiles": ["src/export/csv.ts"]}],
+  "escalations": [],
   "checks": [{"command": "the actual check command", "result": "passed"}],
-  "review": "accept",
+  "review": {"subagent": "astra-review", "requestedModel": "claude-opus-5-5", "effort": "medium", "verdict": "accept"},
   "usage": "unavailable"
 }
 ```
 
-The record describes observed work. Fill it from the run; examples are not evidence. Use the host's exposed model field only when available, and separate it from requested configuration.
+An escalation entry names the task, the condition (`unusable-result`, `repeated-failure`, or `declared-difficulty`) and the model it moved to. The record describes observed work. Fill it from the run; examples are not evidence. Use the host's exposed model field only when available, and separate it from requested configuration.

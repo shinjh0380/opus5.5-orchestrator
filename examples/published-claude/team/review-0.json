@@ -1,0 +1,11 @@
+{
+  "verdict": "fix",
+  "summary": "calculator.mjs meets the contract. The arithmetic matches the formulas, validation is strict, model lookup uses only own keys, the 272K limit is enforced, and breakEvenReuse returns 1 for both models. The host test run passed 11 of 11 tests. index.html covers the required IDs, presets, Korean copy, the source and scope notes, the cache-share and break-even text, and responsive CSS. One material UI defect remains: blank or unparseable number fields are silently read as 0, so the page shows a valid-looking total for invalid input.",
+  "findings": [
+    {
+      "file": "index.html",
+      "issue": "recalc() reads each field with Number(el.value). An empty field, or a number input the browser can't parse (for example while '-' or '1e' is being typed), reports value === '', and Number('') is 0. The calculator then shows a valid total and breakdown as if that field were 0 tokens. For example, clearing the output field shows the cost with no output instead of an error. This breaks the contract rule that a valid total must never be shown for invalid input.",
+      "fix": "Parse each field so that blank or unparseable input becomes invalid. For example: const raw = el.value.trim(); const n = (raw === '' || el.validity.badInput) ? NaN : Number(raw);. calculateCost then throws, fail() shows the existing '모든 토큰 칸에 숫자를 입력해 주세요.' message, and the total is cleared to '계산 불가'."
+    }
+  ]
+}

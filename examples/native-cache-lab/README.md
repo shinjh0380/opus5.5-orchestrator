@@ -1,5 +1,7 @@
 # Native skill demo: add CSV export to Cache Lab
 
+> **Historical record (v0.2.0, Codex + Astra/Luna).** The reproduction steps below use the former Codex setup. With the current plugin, open Claude Code with `claude-opus-5-5` and use `/astra-orchestrator` with the same request; the installed subagents are `astra-worker` (Sonnet 5.5) and `astra-review` (Opus 5.5).
+
 This example was completed in an actual interactive Codex CLI 0.153.4 session using the installed `astra-orchestrator` skill on September 7, 2026. It extends the [original team-generated Cache Lab](../published/team/).
 
 The primary ran Astra low, delegated `index.html`, `export.mjs`, and `export.test.mjs` to the installed `astra_luna_worker` profile (Luna medium), then requested an independent `astra_review` (Astra low). Session metadata confirmed these configured models and efforts. It does not independently attest the service's internal backend model.

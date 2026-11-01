@@ -1,0 +1,150 @@
+{
+  "asOf": "2026-11-01",
+  "protocol": "docs/experiment-protocol.md (same contract, checks, budgets and order)",
+  "samplesPerArm": 1,
+  "cacheControlled": false,
+  "pricing": "Claude API Standard list prices; see receipt.pricing",
+  "totals": {
+    "team-cache-on": {
+      "status": "accepted",
+      "calls": 7,
+      "byModel": {
+        "claude-opus-5-5": 3,
+        "claude-sonnet-5-5": 4
+      },
+      "input": 150851,
+      "cached": 38487,
+      "cacheWrite": 112350,
+      "output": 22307,
+      "reasoning": 2225,
+      "usd": 0.9679092,
+      "auxiliaryReportedUsd": 0.006584800000000001,
+      "cliReportedUsd": 0.9744940000000002,
+      "modelSeconds": 173.004,
+      "wallSeconds": 162.727,
+      "checks": [
+        {
+          "round": 0,
+          "passed": true
+        },
+        {
+          "round": 1,
+          "passed": true
+        }
+      ],
+      "escalations": []
+    },
+    "solo-cache-on": {
+      "status": "accepted",
+      "calls": 2,
+      "byModel": {
+        "claude-opus-5-5": 2
+      },
+      "input": 47534,
+      "cached": 12865,
+      "cacheWrite": 34665,
+      "output": 14936,
+      "reasoning": 1609,
+      "usd": 0.5786290000000001,
+      "auxiliaryReportedUsd": 0.0022558,
+      "cliReportedUsd": 0.5808848,
+      "modelSeconds": 135.692,
+      "wallSeconds": 135.954,
+      "checks": [
+        {
+          "round": 0,
+          "passed": true
+        }
+      ],
+      "escalations": []
+    },
+    "team": {
+      "status": "accepted",
+      "calls": 7,
+      "byModel": {
+        "claude-opus-5-5": 3,
+        "claude-sonnet-5-5": 4
+      },
+      "input": 150511,
+      "cached": 0,
+      "cacheWrite": 0,
+      "output": 21314,
+      "reasoning": 2049,
+      "usd": 0.7087739999999998,
+      "auxiliaryReportedUsd": 0.0061588,
+      "cliReportedUsd": 0.7149327999999999,
+      "modelSeconds": 165.957,
+      "wallSeconds": 158.883,
+      "checks": [
+        {
+          "round": 0,
+          "passed": true
+        },
+        {
+          "round": 1,
+          "passed": true
+        }
+      ],
+      "escalations": []
+    },
+    "solo": {
+      "status": "accepted",
+      "calls": 2,
+      "byModel": {
+        "claude-opus-5-5": 2
+      },
+      "input": 47220,
+      "cached": 0,
+      "cacheWrite": 0,
+      "output": 15532,
+      "reasoning": 2209,
+      "usd": 0.49951999999999996,
+      "auxiliaryReportedUsd": 0.0022104,
+      "cliReportedUsd": 0.5017304,
+      "modelSeconds": 143.43,
+      "wallSeconds": 143.643,
+      "checks": [
+        {
+          "round": 0,
+          "passed": true
+        }
+      ],
+      "escalations": []
+    }
+  },
+  "historicalAstraLuna": {
+    "team": {
+      "status": "accepted",
+      "input": 77697,
+      "output": 7032,
+      "cached": 0,
+      "usd": 0.5204534000000001,
+      "wallSeconds": 140.838
+    },
+    "solo": {
+      "status": "accepted",
+      "input": 43433,
+      "output": 4747,
+      "cached": 0,
+      "usd": 0.6716799999999999,
+      "wallSeconds": 156.849
+    },
+    "development-failure-01": {
+      "status": "failed",
+      "input": 19260,
+      "output": 1210,
+      "cached": 0,
+      "usd": 0.2531,
+      "wallSeconds": 46.199
+    },
+    "development-failure-02": {
+      "status": "failed",
+      "input": 19348,
+      "output": 115,
+      "cached": 0,
+      "usd": 0.19923,
+      "wallSeconds": 7.717
+    }
+  },
+  "scope": "One uncontrolled sample per arm. Not a general benchmark, subscription bill or cache optimization result. Historical figures used different models, provider, CLI and prices."
+}

@@ -89,54 +89,92 @@ test("worker cannot mutate another owner or repeat a file", () => {
     ),
   );
 });
-test("cost partitions input and counts reasoning only within output", () => {
+test("cost partitions input, 5-minute and 1-hour cache writes; reasoning stays within output", () => {
   const u = {
     input_tokens: 100000,
     cached_input_tokens: 80000,
     cache_write_input_tokens: 10000,
+    cache_write_1h_input_tokens: 4000,
     output_tokens: 2000,
     reasoning_output_tokens: 1000,
   };
-  assert.equal(estimate("gpt-6-astra", u).usd, 0.405);
+  // 10K uncached*$4 + 80K read*$0.20 + 6K 5m-write*$5 + 4K 1h-write*$8 + 2K out*$20
+  assert.equal(estimate("claude-opus-5-5", u).usd, 0.158);
 });
-test("missing cache writes produce a range, missing usage never becomes zero", () => {
-  const c = estimate("gpt-6-astra", {
+test("missing cache-write telemetry produces a range, missing usage never becomes zero", () => {
+  const c = estimate("claude-opus-5-5", {
     input_tokens: 100000,
     cached_input_tokens: 80000,
     output_tokens: 2000,
   });
   assert.equal(c.kind, "range");
-  assert.equal(c.min, 0.38);
-  assert.equal(c.max, 0.43);
-  assert.equal(estimate("gpt-6-astra", null).kind, "unavailable");
+  assert.equal(c.min, 0.136);
+  assert.ok(Math.abs(c.max - 0.216) < 1e-12);
+  const d = estimate("claude-sonnet-5-5", {
+    input_tokens: 100000,
+    cached_input_tokens: 80000,
+    cache_write_input_tokens: 10000,
+    output_tokens: 2000,
+  });
+  assert.equal(d.kind, "range");
+  assert.equal(estimate("claude-opus-5-5", null).kind, "unavailable");
+  // 1M context is billed at standard rates for both models; no short-context cut-off.
   assert.equal(
-    estimate("gpt-6-astra", {
+    estimate("claude-sonnet-5-5", {
       input_tokens: 300000,
       cached_input_tokens: 0,
+      cache_write_input_tokens: 0,
+      cache_write_1h_input_tokens: 0,
       output_tokens: 1,
     }).kind,
-    "unavailable",
+    "standard-equivalent",
   );
 });
-test("multiple turns sum fields only if every turn reports them", () => {
-  const u = summarize([
-    {
-      type: "turn.completed",
-      usage: {
-        input_tokens: 10,
-        cached_input_tokens: 2,
-        output_tokens: 1,
-        cache_write_input_tokens: 3,
+test("legacy OpenAI models have no active price and are rejected as job lanes", () => {
+  assert.equal(estimate("gpt-6-astra", { input_tokens: 1, cached_input_tokens: 0, output_tokens: 1 }).kind, "unavailable");
+  const legacy = structuredClone(base);
+  legacy.models.worker = { model: "gpt-5.6-luna", effort: "medium" };
+  assert.throws(() => validateJob(legacy), /legacy model gpt-5.6-luna/);
+  for (const model of ["opus", "sonnet", "Claude-Opus-5-5", "claude-opus-5-5 "]) {
+    const j = structuredClone(base);
+    j.models.planner.model = model;
+    assert.throws(() => validateJob(j), /Invalid model lane planner/);
+  }
+  const noEscalation = structuredClone(base);
+  delete noEscalation.models.escalation;
+  assert.equal(validateJob(noEscalation).models.escalation, undefined);
+  const badEscalation = structuredClone(base);
+  badEscalation.models.escalation = { model: "claude-opus-5-5", effort: "ultra" };
+  assert.throws(() => validateJob(badEscalation), /escalation/);
+});
+test("CLI usage is normalized per model; host auxiliary models are kept separate", () => {
+  // Shape recorded from `claude -p --output-format json` (Claude Code 2.1.316).
+  const result = {
+    total_cost_usd: 0.1173138,
+    modelUsage: {
+      "claude-haiku-5-5": { inputTokens: 1178, outputTokens: 16, cacheReadInputTokens: 0, cacheCreationInputTokens: 0, costUSD: 0.0001258 },
+      "claude-opus-5-5": {
+        inputTokens: 2, outputTokens: 77, cacheReadInputTokens: 0, cacheCreationInputTokens: 14455,
+        cacheCreationEphemeral1hInputTokens: 14455, cacheCreationEphemeral5mInputTokens: 0,
+        thinkingTokens: 0, costUSD: 0.117188, canonicalModel: "claude-opus-5-5",
       },
     },
-    {
-      type: "turn.completed",
-      usage: { input_tokens: 20, cached_input_tokens: 5, output_tokens: 2 },
-    },
-  ]);
-  assert.equal(u.input_tokens, 30);
-  assert.equal(u.output_tokens, 3);
-  assert.equal(u.cache_write_input_tokens, undefined);
+  };
+  const s = summarize(result, "claude-opus-5-5");
+  assert.deepEqual(s.usage, {
+    input_tokens: 14457,
+    cached_input_tokens: 0,
+    cache_write_input_tokens: 14455,
+    cache_write_1h_input_tokens: 14455,
+    output_tokens: 77,
+    reasoning_output_tokens: 0,
+  });
+  // Our list-price estimate matches the CLI's own per-model figure.
+  assert.ok(Math.abs(estimate("claude-opus-5-5", s.usage).usd - 0.117188) < 1e-9);
+  assert.deepEqual(s.auxiliary.map((a) => a.model), ["claude-haiku-5-5"]);
+  // A call served by a model other than the requested one is not accepted.
+  assert.equal(summarize(result, "claude-sonnet-5-5"), null);
+  assert.equal(summarize({}, "claude-opus-5-5"), null);
 });
 test("apply verifies all context and candidate hashes before writes", async () => {
   const d = await fs.mkdtemp(path.join(os.tmpdir(), "astra-apply-")),

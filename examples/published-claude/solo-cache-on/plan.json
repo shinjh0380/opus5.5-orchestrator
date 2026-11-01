@@ -1,0 +1,18 @@
+{
+  "rationale": "Direct single implementer; no planner call",
+  "tasks": [
+    {
+      "id": "solo",
+      "objective": "Build Cache Lab, a polished Korean interactive web calculator that teaches ordinary input, cache reads, cache writes and output costs. Follow CONTRACT.md exactly. Deliver calculator.mjs and index.html. No dependencies or external network assets. Correct arithmetic, transparent assumptions, responsive readable UI, accessible labels and immediate recalculation are essential.",
+      "files": [
+        "calculator.mjs",
+        "index.html"
+      ],
+      "context": [
+        "CONTRACT.md",
+        "calculator.test.mjs"
+      ],
+      "acceptance": "Satisfy supplied contract and all deterministic checks"
+    }
+  ]
+}

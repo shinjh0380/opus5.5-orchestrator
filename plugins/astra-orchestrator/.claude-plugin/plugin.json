@@ -1,0 +1,13 @@
+{
+  "name": "astra-orchestrator",
+  "version": "0.3.0",
+  "description": "Opus 5.5 plans and reviews; Sonnet 5.5 implements focused, file-owned tasks as native Claude Code subagents.",
+  "author": {
+    "name": "shinjh0380",
+    "url": "https://github.com/shinjh0380"
+  },
+  "homepage": "https://github.com/shinjh0380/opus5.5-orchestrator",
+  "repository": "https://github.com/shinjh0380/opus5.5-orchestrator",
+  "license": "MIT",
+  "keywords": ["claude-code", "opus", "sonnet", "orchestration", "subagents", "skills"]
+}

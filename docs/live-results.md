@@ -1,5 +1,7 @@
 # Live CLI pilot: one Cache Lab run per route
 
+> **Historical record (v0.2.0, Codex + GPT-6 Astra / GPT-5.6 Luna).** Kept unchanged for comparison. The current Claude Opus 5.5 / Sonnet 5.5 configuration and its results are in [claude-live-results.md](claude-live-results.md) and [migration-claude.md](migration-claude.md).
+
 On September 7, 2026, macOS with Codex CLI 0.153.4, we ran the same contract, tests, and output requirements under the [predefined protocol](experiment-protocol.md). The team ran first, then solo. Cache state was not controlled. These are **CLI results**, not measurements of the native plugin or skill.
 
 | Measure | Astra planning + Luna implementation + Astra review | Astra implementation + Astra review |

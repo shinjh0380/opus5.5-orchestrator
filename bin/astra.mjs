@@ -3,13 +3,17 @@ import path from "node:path";
 import { run, apply } from "../src/runner.mjs";
 const [cmd, file, ...rest] = process.argv.slice(2);
 const usage =
-  "astra-orchestrator run job.json [--out directory] [--codex binary] [--dry-run]\nastra-orchestrator apply run-directory target-directory";
+  "astra-orchestrator run job.json [--out directory] [--claude binary] [--dry-run]\nastra-orchestrator apply run-directory target-directory";
 try {
   if (cmd === "run" && file) {
     const opts = {};
     for (let i = 0; i < rest.length; i++) {
       if (rest[i] === "--dry-run") opts.dryRun = true;
-      else if (["--out", "--codex"].includes(rest[i]) && rest[i + 1]) {
+      else if (rest[i] === "--codex")
+        throw new Error(
+          "--codex was removed: the runner now calls Claude. Use --claude /path/to/claude or CLAUDE_BIN.",
+        );
+      else if (["--out", "--claude"].includes(rest[i]) && rest[i + 1]) {
         const key = rest[i].slice(2);
         opts[key] = rest[++i];
       } else throw new Error(usage);

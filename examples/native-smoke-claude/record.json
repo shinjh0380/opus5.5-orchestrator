@@ -1,0 +1,99 @@
+{
+  "date": "2026-11-02",
+  "mode": "native",
+  "host": "Claude Code 2.1.316, headless (-p, stream-json), plugin loaded with --plugin-dir",
+  "primaryModelRequested": "claude-opus-5-5",
+  "primaryModelReportedByHost": "claude-opus-5-5",
+  "spawns": [
+    {
+      "subagentType": "astra-orchestrator:astra-worker",
+      "modelOverride": null,
+      "description": "Implement csv.mjs per contract"
+    },
+    {
+      "subagentType": "astra-orchestrator:astra-review",
+      "modelOverride": null,
+      "description": "Review csv.mjs against contract"
+    },
+    {
+      "subagentType": "astra-orchestrator:astra-worker",
+      "modelOverride": null,
+      "description": "Repair csv.mjs sparse-array gap"
+    },
+    {
+      "subagentType": "astra-orchestrator:astra-review",
+      "modelOverride": null,
+      "description": "Re-review repaired csv.mjs"
+    }
+  ],
+  "subagentDefinitions": {
+    "astra-orchestrator:astra-worker": {
+      "model": "claude-sonnet-5-5",
+      "effort": "medium"
+    },
+    "astra-orchestrator:astra-review": {
+      "model": "claude-opus-5-5",
+      "effort": "medium"
+    }
+  },
+  "hostModelUsage": {
+    "claude-opus-5-5": {
+      "inputTokens": 34,
+      "outputTokens": 8685,
+      "cacheReadInputTokens": 478154,
+      "cacheCreationInputTokens": 32768,
+      "costUSD": 0.4992048
+    },
+    "claude-sonnet-5-5": {
+      "inputTokens": 12,
+      "outputTokens": 2361,
+      "cacheReadInputTokens": 150305,
+      "cacheCreationInputTokens": 40548,
+      "costUSD": 0.1400345
+    }
+  },
+  "hostReportedCostUsd": 0.6392393,
+  "durationSeconds": 114.054,
+  "subagentStats": {
+    "spawned": 4,
+    "completed": 4,
+    "failed": 0,
+    "by_type": {
+      "astra-orchestrator:astra-worker": 2,
+      "astra-orchestrator:astra-review": 2
+    }
+  },
+  "flow": [
+    "primary inspected contract",
+    "astra-worker (Sonnet) implemented csv.mjs",
+    "primary ran checks: 5/5",
+    "astra-review (Opus) -> fix: sparse-array holes bypassed TypeError validation",
+    "resume of worker failed in this no-persistence run; fresh astra-worker (Sonnet) repaired (not an escalation)",
+    "primary reran checks: 5/5 plus sparse-array probes",
+    "fresh astra-review (Opus) -> accept"
+  ],
+  "checks": {
+    "command": "node --test csv.test.mjs",
+    "tests": 5,
+    "passed": 5,
+    "failed": 0
+  },
+  "repairRounds": 1,
+  "escalations": [],
+  "reviewVerdicts": [
+    "fix",
+    "accept"
+  ],
+  "backendModelIndependentlyVerified": false,
+  "executionNotes": [
+    "Same contract and tests as examples/native-smoke (Astra/Luna, 2026-09-07).",
+    "Host modelUsage lists claude-opus-5-5 and claude-sonnet-5-5 only; costs are client-side list-price estimates.",
+    "--no-session-persistence prevented resuming the first worker; in normal sessions the skill resumes it.",
+    "Run in a disposable git repository; git diff showed only csv.mjs."
+  ],
+  "sha256": {
+    "CONTRACT.md": "d072de354651d5bbd4968060b634480e25a8a45439fb14bdea778e50663ba179",
+    "csv.test.mjs": "f4dd1c3a24004fab468865407a94c20302424caa691e239ea8d3fec3a5890f7a",
+    "csv.mjs": "70989d4a2995cd460ad325b3c93dd0321efc4a37ec1ad9b5c51758ebdeafefe0"
+  }
+}

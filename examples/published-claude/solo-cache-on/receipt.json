@@ -1,0 +1,129 @@
+{
+  "version": 1,
+  "status": "accepted",
+  "startedAt": "2026-11-01T16:24:46.629Z",
+  "goal": "Build Cache Lab, a polished Korean interactive web calculator that teaches ordinary input, cache reads, cache writes and output costs. Follow CONTRACT.md exactly. Deliver calculator.mjs and index.html. No dependencies or external network assets. Correct arithmetic, transparent assumptions, responsive readable UI, accessible labels and immediate recalculation are essential.",
+  "calls": [
+    {
+      "id": "solo",
+      "role": "planner",
+      "modelRequested": "claude-opus-5-5",
+      "modelReported": "claude-opus-5-5",
+      "effort": "medium",
+      "startedAt": "2026-11-01T16:24:46.636Z",
+      "seconds": 116.833,
+      "promptChars": 7382,
+      "promptSha256": "5bd0fc8f10b326c771001ff1971f326b215b04bbf886be20148a518ee72ce6c3",
+      "usage": {
+        "input_tokens": 17451,
+        "cached_input_tokens": 0,
+        "cache_write_input_tokens": 17449,
+        "output_tokens": 13374,
+        "cache_write_1h_input_tokens": 17449,
+        "reasoning_output_tokens": 698
+      },
+      "price": {
+        "kind": "standard-equivalent",
+        "usd": 0.40708
+      },
+      "auxiliary": [
+        {
+          "model": "claude-haiku-5-5",
+          "usage": {
+            "input_tokens": 4141,
+            "cached_input_tokens": 0,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 22,
+            "cache_write_1h_input_tokens": 0,
+            "reasoning_output_tokens": 0
+          },
+          "reportedCostUsd": 0.0004251
+        }
+      ],
+      "reportedCostUsd": 0.4075051,
+      "stopReason": "tool_use",
+      "exitCode": 0,
+      "timedOut": false,
+      "modelEvidence": "Pinned --model argument and the CLI result's per-model usage key; not an independent backend attestation"
+    },
+    {
+      "id": "review-0",
+      "role": "reviewer",
+      "modelRequested": "claude-opus-5-5",
+      "modelReported": "claude-opus-5-5",
+      "effort": "medium",
+      "startedAt": "2026-11-01T16:26:43.717Z",
+      "seconds": 18.859,
+      "promptChars": 30556,
+      "promptSha256": "8063faa288349965e732946bb13abb71c3b451aeeb6941b90a444b259df8d5c3",
+      "usage": {
+        "input_tokens": 30083,
+        "cached_input_tokens": 12865,
+        "cache_write_input_tokens": 17216,
+        "output_tokens": 1562,
+        "cache_write_1h_input_tokens": 17216,
+        "reasoning_output_tokens": 911
+      },
+      "price": {
+        "kind": "standard-equivalent",
+        "usd": 0.171549
+      },
+      "auxiliary": [
+        {
+          "model": "claude-haiku-5-5",
+          "usage": {
+            "input_tokens": 16717,
+            "cached_input_tokens": 0,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 318,
+            "cache_write_1h_input_tokens": 0,
+            "reasoning_output_tokens": 300
+          },
+          "reportedCostUsd": 0.0018307
+        }
+      ],
+      "reportedCostUsd": 0.1733797,
+      "stopReason": "tool_use",
+      "exitCode": 0,
+      "timedOut": false,
+      "modelEvidence": "Pinned --model argument and the CLI result's per-model usage key; not an independent backend attestation"
+    }
+  ],
+  "checks": [
+    {
+      "round": 0,
+      "argv": [
+        "node",
+        "--test",
+        "calculator.test.mjs"
+      ],
+      "exitCode": 0,
+      "passed": true,
+      "stdout": "TAP version 13\n# Subtest: Astra warm: cached input is a subset, output counted once\nok 1 - Astra warm: cached input is a subset, output counted once\n  ---\n  duration_ms: 3.836053\n  type: 'test'\n  ...\n# Subtest: cache writes replace ordinary input instead of adding 125% twice\nok 2 - cache writes replace ordinary input instead of adding 125% twice\n  ---\n  duration_ms: 0.359033\n  type: 'test'\n  ...\n# Subtest: Luna same token mix uses its own prices\nok 3 - Luna same token mix uses its own prices\n  ---\n  duration_ms: 0.188618\n  type: 'test'\n  ...\n# Subtest: mixed reads+writes+ordinary\nok 4 - mixed reads+writes+ordinary\n  ---\n  duration_ms: 0.232076\n  type: 'test'\n  ...\n# Subtest: zero input and nonzero output\nok 5 - zero input and nonzero output\n  ---\n  duration_ms: 0.586916\n  type: 'test'\n  ...\n# Subtest: reject negative, fractional, nonfinite, string and missing counts\nok 6 - reject negative, fractional, nonfinite, string and missing counts\n  ---\n  duration_ms: 0.901526\n  type: 'test'\n  ...\n# Subtest: reject overlapping subsets and long context\nok 7 - reject overlapping subsets and long context\n  ---\n  duration_ms: 53.590457\n  type: 'test'\n  ...\n# Subtest: model keys do not accept prototype properties\nok 8 - model keys do not accept prototype properties\n  ---\n  duration_ms: 0.673603\n  type: 'test'\n  ...\n# Subtest: one reuse beats two ordinary reads\nok 9 - one reuse beats two ordinary reads\n  ---\n  duration_ms: 0.976934\n  type: 'test'\n  ...\n# Subtest: hundred deterministic mixed cases follow the declared rates\nok 10 - hundred deterministic mixed cases follow the declared rates\n  ---\n  duration_ms: 1.051465\n  type: 'test'\n  ...\n# Subtest: UI includes required accessible controls and local module\nok 11 - UI includes required accessible controls and local module\n  ---\n  duration_ms: 1.188897\n  type: 'test'\n  ...\n1..11\n# tests 11\n# suites 0\n# pass 11\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 178.024583\n",
+      "stderr": ""
+    }
+  ],
+  "baseline": {
+    "CONTRACT.md": "12c16398e0305264c657c6771cb83c316cae9f51b0de3da507b2ce4b7106f84c",
+    "calculator.test.mjs": "3f0c187d5d1beb1e24ddce2e5d0576172890a4e25b806d0850a4283f43fc2f9c",
+    "calculator.mjs": null,
+    "index.html": null
+  },
+  "outputs": [
+    "calculator.mjs",
+    "index.html"
+  ],
+  "provider": "anthropic",
+  "client": "claude -p",
+  "pricing": {
+    "asOf": "2026-11-02",
+    "url": "https://platform.claude.com/docs/en/about-claude/pricing",
+    "assumption": "USD Claude API Standard list-price equivalent; not Claude subscription billing; no batch discount, tools or taxes"
+  },
+  "escalations": [],
+  "outputHashes": {
+    "calculator.mjs": "60b5028597f603f4952dc744ed4518b5dded729157e08e0b764e60227d656257",
+    "index.html": "98796c99351c9005ed633cf41715de8fe5b252a05270f89d3f0e37454772d213"
+  },
+  "finishedAt": "2026-11-01T16:27:02.583Z"
+}

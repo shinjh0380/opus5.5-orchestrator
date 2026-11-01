@@ -1,3 +1,4 @@
+// Historical: regenerates the v0.2.0 Astra/Luna evidence from its original .runs/. For Claude runs use publish-claude-evidence.mjs.
 // Only share reviewed, explicitly selected artifacts. Never copy .runs/private.
 import fs from "node:fs/promises";
 import path from "node:path";

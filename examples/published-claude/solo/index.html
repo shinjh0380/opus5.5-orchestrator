@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cache Lab — 프롬프트 캐시 비용 계산기</title>
+<style>
+  :root {
+    --ink: #11161f;
+    --navy: #172233;
+    --navy-2: #1f2d42;
+    --paper: #f6f1e7;
+    --paper-2: #ece5d6;
+    --mint: #5fd3b0;
+    --mint-deep: #1e8a6c;
+    --amber: #e3a44b;
+    --coral: #d9705a;
+    --slate: #8fa0b8;
+    --muted: #5d6676;
+    --line: rgba(17,22,31,.14);
+    --radius: 14px;
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    font-family: "Pretendard", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", system-ui, sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.6;
+    overflow-x: hidden;
+    word-break: keep-all;
+    overflow-wrap: anywhere;
+  }
+  a { color: var(--mint-deep); }
+  .wrap { width: 100%; max-width: 1180px; margin: 0 auto; padding: 0 20px; }
+  header.hero { background: var(--ink); color: var(--paper); padding: 48px 0 40px; border-bottom: 4px solid var(--mint); }
+  .kicker { font-size: .78rem; letter-spacing: .18em; text-transform: uppercase; color: var(--mint); font-weight: 700; margin: 0 0 12px; }
+  h1 { font-family: Georgia, "Noto Serif KR", "Nanum Myeongjo", serif; font-size: clamp(2rem, 6vw, 3.6rem); line-height: 1.12; margin: 0 0 16px; font-weight: 700; letter-spacing: -.01em; }
+  h1 em { font-style: normal; color: var(--mint); }
+  .lede { max-width: 720px; font-size: clamp(1rem, 2.4vw, 1.15rem); color: #d7d2c6; margin: 0; }
+  .badge { display: inline-block; margin-top: 18px; padding: 4px 12px; border: 1px solid var(--mint); border-radius: 999px; font-size: .85rem; color: var(--mint); }
+  main { padding: 32px 0 56px; }
+  .grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 24px; }
+  @media (min-width: 900px) { .grid { grid-template-columns: minmax(0, 380px) minmax(0, 1fr); align-items: start; } }
+  .card { background: #fffdf8; border: 1px solid var(--line); border-radius: var(--radius); padding: 24px; min-width: 0; }
+  .card.dark { background: var(--navy); color: var(--paper); border-color: var(--navy-2); }
+  h2 { font-family: Georgia, "Noto Serif KR", serif; font-size: 1.35rem; margin: 0 0 14px; }
+  h3 { font-size: 1rem; margin: 22px 0 10px; }
+  .field { margin-bottom: 16px; }
+  label { display: block; font-weight: 700; font-size: .95rem; margin-bottom: 6px; }
+  .hint { display: block; font-size: .82rem; color: var(--muted); margin-top: 4px; }
+  input[type=number], select {
+    width: 100%; font: inherit; font-size: 1.05rem; padding: 10px 12px;
+    border: 1.5px solid #c9c0ad; border-radius: 10px; background: #fff; color: var(--ink);
+    font-variant-numeric: tabular-nums;
+  }
+  input:focus-visible, select:focus-visible, button:focus-visible, a:focus-visible { outline: 3px solid var(--mint-deep); outline-offset: 2px; }
+  input[aria-invalid=true] { border-color: var(--coral); background: #fff4f1; }
+  .presets { display: flex; flex-wrap: wrap; gap: 8px; margin: 4px 0 20px; }
+  .presets button {
+    flex: 1 1 100px; font: inherit; font-size: .9rem; font-weight: 700; padding: 10px 12px; cursor: pointer;
+    border-radius: 10px; border: 1.5px solid var(--navy); background: var(--paper); color: var(--navy);
+  }
+  .presets button:hover { background: var(--navy); color: var(--paper); }
+  .error { min-height: 1.6em; color: #a63a25; font-weight: 700; margin: 0; }
+  .total-label { font-size: .9rem; color: var(--slate); margin: 0; }
+  .total { font-family: Georgia, serif; font-size: clamp(2.2rem, 8vw, 3.6rem); font-weight: 700; color: var(--mint); margin: 2px 0 6px; font-variant-numeric: tabular-nums; line-height: 1.1; }
+  .summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-top: 18px; }
+  .stat { background: var(--navy-2); border-radius: 10px; padding: 12px 14px; min-width: 0; }
+  .stat b { display: block; font-size: 1.25rem; font-variant-numeric: tabular-nums; color: var(--paper); }
+  .stat span { font-size: .82rem; color: var(--slate); }
+  .bar { display: flex; width: 100%; height: 30px; border-radius: 8px; overflow: hidden; background: var(--paper-2); border: 1px solid var(--line); }
+  .bar > div { height: 100%; min-width: 0; transition: width .25s ease; }
+  .seg-ordinary { background: var(--slate); }
+  .seg-cached { background: var(--mint); }
+  .seg-write { background: var(--amber); }
+  .seg-output { background: var(--coral); }
+  .legend { display: flex; flex-wrap: wrap; gap: 6px 16px; list-style: none; padding: 0; margin: 10px 0 0; font-size: .85rem; }
+  .legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+  table { width: 100%; border-collapse: collapse; font-size: .92rem; font-variant-numeric: tabular-nums; table-layout: fixed; }
+  th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font-size: .8rem; color: var(--muted); font-weight: 700; }
+  td.num, th.num { text-align: right; }
+  tfoot td { font-weight: 700; border-bottom: 0; }
+  @media (max-width: 520px) { .col-rate { display: none; } table { font-size: .85rem; } }
+  .callout { border-left: 4px solid var(--mint-deep); background: #eef8f3; padding: 14px 16px; border-radius: 0 10px 10px 0; margin: 18px 0 0; }
+  .compare { margin: 14px 0 0; font-size: .95rem; }
+  .empty { color: var(--muted); font-style: italic; }
+  .notes { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px; margin-top: 24px; }
+  .notes ul { padding-left: 1.2em; margin: 0; }
+  .notes li { margin-bottom: 6px; }
+  .diagram { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 10px; }
+  .step { border: 1px dashed #b8ad97; border-radius: 10px; padding: 12px; font-size: .9rem; background: var(--paper); }
+  .step strong { display: block; margin-bottom: 4px; }
+  footer { border-top: 1px solid var(--line); padding: 24px 0 40px; font-size: .85rem; color: var(--muted); }
+  .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="wrap">
+    <p class="kicker">Cache Lab · 가상 비용 계산기</p>
+    <h1>반복되는 입력은<br><em>캐시</em>로 싸게 읽는다</h1>
+    <p class="lede">일반 입력, 캐시 읽기, 캐시 쓰기, 출력 토큰이 요청 한 번의 비용을 어떻게 나누는지 직접 숫자를 바꿔 보며 확인하세요. 값을 바꾸면 즉시 다시 계산됩니다.</p>
+    <span class="badge">가상 시나리오 계산 · 실측 성능 아님</span>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="grid">
+    <section class="card" aria-labelledby="controls-title">
+      <h2 id="controls-title">요청 구성</h2>
+      <form id="calc-form" novalidate onsubmit="return false;">
+        <div class="field">
+          <label for="model">모델</label>
+          <select id="model" name="model">
+            <option value="astra" selected>astra</option>
+            <option value="luna">luna</option>
+          </select>
+          <span class="hint" id="model-rates"></span>
+        </div>
+
+        <p id="preset-title" style="font-weight:700;margin:0 0 6px;">빠른 예시</p>
+        <div class="presets" role="group" aria-labelledby="preset-title">
+          <button type="button" id="preset-warm">캐시 적중 (80%)</button>
+          <button type="button" id="preset-cold">캐시 최초 쓰기</button>
+          <button type="button" id="preset-plain">캐시 없음</button>
+        </div>
+
+        <div class="field">
+          <label for="input">전체 입력 토큰</label>
+          <input type="number" id="input" name="input" min="0" max="272000" step="1" inputmode="numeric" value="100000" aria-describedby="input-hint">
+          <span class="hint" id="input-hint">캐시 읽기·쓰기·일반 입력을 모두 포함한 합계 (최대 272,000)</span>
+        </div>
+        <div class="field">
+          <label for="cached">그중 캐시 읽기 토큰</label>
+          <input type="number" id="cached" name="cached" min="0" step="1" inputmode="numeric" value="80000" aria-describedby="cached-hint">
+          <span class="hint" id="cached-hint">이미 캐시에 있는 접두부를 다시 읽는 부분</span>
+        </div>
+        <div class="field">
+          <label for="write">그중 캐시 쓰기 토큰</label>
+          <input type="number" id="write" name="write" min="0" step="1" inputmode="numeric" value="0" aria-describedby="write-hint">
+          <span class="hint" id="write-hint">이번 요청에서 새로 캐시에 저장하는 부분 (일반 입력 대신 쓰기 요율 적용)</span>
+        </div>
+        <div class="field">
+          <label for="output">출력 토큰</label>
+          <input type="number" id="output" name="output" min="0" step="1" inputmode="numeric" value="2000" aria-describedby="output-hint">
+          <span class="hint" id="output-hint">추론 토큰이 있다면 이미 출력에 포함된 값으로 입력하세요 (별도 합산하지 않음)</span>
+        </div>
+        <p id="error" class="error" role="alert" aria-live="assertive"></p>
+      </form>
+    </section>
+
+    <section class="card dark" aria-labelledby="result-title">
+      <h2 id="result-title">요청 1회 예상 비용</h2>
+      <p class="total-label">총액 (USD, 가상 계산)</p>
+      <p id="total" class="total" aria-live="polite">—</p>
+      <div class="summary">
+        <div class="stat"><b id="hit-rate">—</b><span>입력 중 캐시 읽기 비중</span></div>
+        <div class="stat"><b id="input-cost">—</b><span>입력 비용</span></div>
+        <div class="stat"><b id="output-cost">—</b><span>출력 비용</span></div>
+      </div>
+      <p class="compare" id="compare"></p>
+    </section>
+  </div>
+
+  <section class="card" style="margin-top:24px" aria-labelledby="breakdown-title">
+    <h2 id="breakdown-title">비용 분해</h2>
+    <div id="breakdown" aria-live="polite"></div>
+    <div class="callout" id="breakeven"></div>
+  </section>
+
+  <div class="notes">
+    <section class="card" aria-labelledby="how-title">
+      <h2 id="how-title">캐시는 무엇을 줄이나</h2>
+      <p>캐시는 <strong>반복되는 입력</strong>의 재처리 비용을 줄입니다. 출력 생성 비용은 줄이지 않습니다. 출력 토큰은 캐시 여부와 관계없이 같은 출력 요율로 한 번만 계산됩니다.</p>
+      <div class="diagram" aria-label="요청 흐름 도식">
+        <div class="step"><strong>① 첫 요청</strong>긴 접두부를 캐시에 씀 → 쓰기 요율(일반 입력보다 비쌈)</div>
+        <div class="step"><strong>② 재사용</strong>같은 접두부를 캐시에서 읽음 → 캐시 읽기 요율(훨씬 저렴)</div>
+        <div class="step"><strong>③ 새 부분</strong>질문 등 바뀐 부분 → 일반 입력 요율</div>
+        <div class="step"><strong>④ 출력</strong>답변 생성 → 출력 요율 (캐시 영향 없음)</div>
+      </div>
+      <p style="margin-top:14px">캐시 읽기·쓰기 토큰은 전체 입력의 <em>일부</em>입니다. 쓰기 토큰은 일반 입력 요율에 추가로 붙는 것이 아니라 그 부분을 대체합니다.</p>
+    </section>
+    <section class="card" aria-labelledby="assume-title">
+      <h2 id="assume-title">가정과 범위</h2>
+      <ul>
+        <li>이 페이지는 <strong>가상 계산기</strong>입니다. 실측 성능이나 실제 청구서가 아닙니다.</li>
+        <li>요율: API <strong>Standard</strong> 직접 과금 요율, <strong>2026-09-07</strong> 확인. 구독 크레딧이 아닙니다.</li>
+        <li>출처: <a href="https://developers.openai.com/api/docs/pricing" rel="noopener noreferrer">developers.openai.com/api/docs/pricing</a></li>
+        <li>요청당 입력 <strong>272K(272,000) 토큰 이하</strong>만 계산합니다. 초과 시 계산을 거부합니다.</li>
+        <li>도구 사용료, 세금, 구독 요금은 포함하지 않습니다.</li>
+        <li>내부 계산은 반올림하지 않으며, 화면 표시만 반올림합니다.</li>
+      </ul>
+      <table style="margin-top:14px" aria-label="모델별 100만 토큰당 요율">
+        <thead><tr><th>모델</th><th class="num">일반 입력</th><th class="num">캐시 읽기</th><th class="num">캐시 쓰기</th><th class="num">출력</th></tr></thead>
+        <tbody id="rate-table"></tbody>
+      </table>
+      <p class="hint">단위: 100만 토큰당 USD</p>
+    </section>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">Cache Lab — 교육용 가상 계산기. 요율 출처: developers.openai.com (2026-09-07 기준 Standard). 실제 비용은 공식 요금표를 확인하세요.</div>
+</footer>
+
+<script type="module">
+import { RATES, calculateCost, breakEvenReuse } from './calculator.mjs';
+
+const $ = (id) => document.getElementById(id);
+const fields = ['input', 'cached', 'write', 'output'];
+const modelEl = $('model');
+const nf = new Intl.NumberFormat('ko-KR');
+
+function usd(v) {
+  return '$' + v.toLocaleString('en-US', { minimumFractionDigits: 4, maximumFractionDigits: 6 });
+}
+function pct(v) {
+  return (v * 100).toLocaleString('ko-KR', { maximumFractionDigits: 1 }) + '%';
+}
+function readCount(id) {
+  const raw = $(id).value.trim();
+  if (raw === '') return NaN;
+  return Number(raw);
+}
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
+// 요율표
+$('rate-table').innerHTML = Object.keys(RATES).map((m) => {
+  const r = RATES[m];
+  return `<tr><td>${m}</td><td class="num">$${r.input}</td><td class="num">$${r.cached}</td><td class="num">$${r.write}</td><td class="num">$${r.output}</td></tr>`;
+}).join('');
+
+function markInvalid(msg) {
+  for (const f of fields) $(f).removeAttribute('aria-invalid');
+  const bad = [];
+  for (const f of fields) {
+    const v = readCount(f);
+    if (!Number.isSafeInteger(v) || v < 0) bad.push(f);
+  }
+  if (!bad.length) {
+    if (/272/.test(msg)) bad.push('input');
+    else if (/넘을 수 없습니다/.test(msg)) bad.push('cached', 'write');
+  }
+  for (const f of bad) $(f).setAttribute('aria-invalid', 'true');
+}
+
+function clearResults() {
+  $('total').textContent = '—';
+  $('hit-rate').textContent = '—';
+  $('input-cost').textContent = '—';
+  $('output-cost').textContent = '—';
+  $('compare').textContent = '';
+  $('breakdown').innerHTML = '<p class="empty">입력값을 고치면 비용 분해가 다시 표시됩니다.</p>';
+}
+
+function render() {
+  const model = modelEl.value;
+  const rate = RATES[model];
+  $('model-rates').textContent = rate
+    ? `100만 토큰당 일반 입력 $${rate.input} · 캐시 읽기 $${rate.cached} · 캐시 쓰기 $${rate.write} · 출력 $${rate.output}`
+    : '';
+
+  // 손익분기 문장 (모델만 의존)
+  try {
+    const n = breakEvenReuse(model);
+    const cachedPath = rate.write + n * rate.cached;
+    const freshPath = (n + 1) * rate.input;
+    $('breakeven').innerHTML = `<strong>손익분기:</strong> ${esc(model)}에서는 같은 접두부를 한 번 캐시에 쓴 뒤 <strong>${n}회 재사용</strong>부터 매번 새로 처리하는 것보다 확실히 저렴해집니다. ` +
+      `(100만 토큰 기준: 쓰기 $${rate.write} + 읽기 ${n}회 × $${rate.cached} = $${+cachedPath.toFixed(6)} &lt; 일반 입력 ${n + 1}회 × $${rate.input} = $${+freshPath.toFixed(6)}) ` +
+      `재사용이 0회라면 쓰기 요율이 더 비싸 오히려 손해입니다.`;
+  } catch (e) {
+    $('breakeven').textContent = e.message;
+  }
+
+  const params = { model };
+  for (const f of fields) params[f] = readCount(f);
+
+  let c;
+  try {
+    c = calculateCost(params);
+  } catch (e) {
+    $('error').textContent = '입력 오류: ' + e.message;
+    markInvalid(e.message);
+    clearResults();
+    return;
+  }
+  $('error').textContent = '';
+  for (const f of fields) $(f).removeAttribute('aria-invalid');
+
+  const { input, cached, write, output } = params;
+  const ordCost = c.ordinaryInput * rate.input / 1e6;
+  const cachedCost = cached * rate.cached / 1e6;
+  const writeCost = write * rate.write / 1e6;
+
+  $('total').textContent = usd(c.totalCost);
+  $('hit-rate').textContent = pct(c.cacheHitRate);
+  $('input-cost').textContent = usd(c.inputCost);
+  $('output-cost').textContent = usd(c.outputCost);
+
+  const plain = calculateCost({ model, input, cached: 0, write: 0, output });
+  const diff = plain.totalCost - c.totalCost;
+  let cmp;
+  if (Math.abs(diff) < 1e-12) cmp = '같은 입력을 캐시 없이 보냈을 때와 비용이 같습니다.';
+  else if (diff > 0) cmp = `캐시 없이 보냈다면 ${usd(plain.totalCost)} — 이 구성은 ${usd(diff)} (${pct(diff / plain.totalCost)}) 저렴합니다.`;
+  else cmp = `캐시 없이 보냈다면 ${usd(plain.totalCost)} — 캐시 쓰기 때문에 이번 요청은 ${usd(-diff)} 더 비쌉니다. 이후 재사용에서 회수됩니다.`;
+  $('compare').textContent = cmp;
+
+  const total = c.totalCost;
+  const w = (v) => (total > 0 ? (v / total) * 100 : 0);
+  const tw = (v) => (input > 0 ? (v / input) * 100 : 0);
+
+  const rows = [
+    ['seg-ordinary', '일반 입력', c.ordinaryInput, rate.input, ordCost],
+    ['seg-cached', '캐시 읽기', cached, rate.cached, cachedCost],
+    ['seg-write', '캐시 쓰기', write, rate.write, writeCost],
+    ['seg-output', '출력', output, rate.output, c.outputCost],
+  ];
+
+  $('breakdown').innerHTML = `
+    <h3 style="margin-top:0">비용 비중</h3>
+    <div class="bar" role="img" aria-label="비용 비중: ${rows.map((r) => `${r[1]} ${pct(total > 0 ? r[4] / total : 0)}`).join(', ')}">
+      ${rows.map((r) => `<div class="${r[0]}" style="width:${w(r[4])}%"></div>`).join('')}
+    </div>
+    <ul class="legend">${rows.map((r) => `<li><i class="${r[0]}"></i>${r[1]} ${pct(total > 0 ? r[4] / total : 0)}</li>`).join('')}</ul>
+
+    <h3>입력 토큰 구성 (전체 ${nf.format(input)} 토큰)</h3>
+    <div class="bar" role="img" aria-label="입력 토큰 구성: 일반 ${nf.format(c.ordinaryInput)}, 캐시 읽기 ${nf.format(cached)}, 캐시 쓰기 ${nf.format(write)}">
+      <div class="seg-ordinary" style="width:${tw(c.ordinaryInput)}%"></div>
+      <div class="seg-cached" style="width:${tw(cached)}%"></div>
+      <div class="seg-write" style="width:${tw(write)}%"></div>
+    </div>
+    <p class="hint">캐시 읽기·쓰기는 전체 입력 안에 포함됩니다. 출력은 입력과 별개로 한 번만 계산됩니다.</p>
+
+    <h3>항목별 계산</h3>
+    <table>
+      <thead><tr><th>항목</th><th class="num">토큰</th><th class="num col-rate">요율 / 100만</th><th class="num">비용</th></tr></thead>
+      <tbody>
+        ${rows.map((r) => `<tr><td><i class="${r[0]}" style="display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px"></i>${r[1]}</td><td class="num">${nf.format(r[2])}</td><td class="num col-rate">$${r[3]}</td><td class="num">${usd(r[4])}</td></tr>`).join('')}
+      </tbody>
+      <tfoot><tr><td>합계</td><td class="num"></td><td class="num col-rate"></td><td class="num">${usd(total)}</td></tr></tfoot>
+    </table>`;
+}
+
+function applyPreset(values) {
+  fields.forEach((f, i) => { $(f).value = String(values[i]); });
+  render();
+}
+
+$('preset-warm').addEventListener('click', () => applyPreset([100000, 80000, 0, 2000]));
+$('preset-cold').addEventListener('click', () => applyPreset([100000, 0, 100000, 2000]));
+$('preset-plain').addEventListener('click', () => applyPreset([100000, 0, 0, 2000]));
+
+for (const el of [modelEl, ...fields.map($)]) {
+  el.addEventListener('input', render);
+  el.addEventListener('change', render);
+}
+
+render();
+</script>
+</body>
+</html>

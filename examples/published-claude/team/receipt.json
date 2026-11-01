@@ -1,0 +1,352 @@
+{
+  "version": 1,
+  "status": "accepted",
+  "startedAt": "2026-11-01T16:27:19.218Z",
+  "goal": "Build Cache Lab, a polished Korean interactive web calculator that teaches ordinary input, cache reads, cache writes and output costs. Follow CONTRACT.md exactly. Deliver calculator.mjs and index.html. No dependencies or external network assets. Correct arithmetic, transparent assumptions, responsive readable UI, accessible labels and immediate recalculation are essential.",
+  "calls": [
+    {
+      "id": "plan",
+      "role": "planner",
+      "modelRequested": "claude-opus-5-5",
+      "modelReported": "claude-opus-5-5",
+      "effort": "medium",
+      "startedAt": "2026-11-01T16:27:19.224Z",
+      "seconds": 28.953,
+      "promptChars": 7096,
+      "promptSha256": "68f2f646f699e336da17624cf601987e0de9a0daf16a107a92ff4e439dafb9b0",
+      "usage": {
+        "input_tokens": 17459,
+        "cached_input_tokens": 0,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 2844,
+        "cache_write_1h_input_tokens": 0,
+        "reasoning_output_tokens": 162
+      },
+      "price": {
+        "kind": "standard-equivalent",
+        "usd": 0.126716
+      },
+      "auxiliary": [
+        {
+          "model": "claude-haiku-5-5",
+          "usage": {
+            "input_tokens": 4021,
+            "cached_input_tokens": 0,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 242,
+            "cache_write_1h_input_tokens": 0,
+            "reasoning_output_tokens": 222
+          },
+          "reportedCostUsd": 0.0005231000000000001
+        }
+      ],
+      "reportedCostUsd": 0.1272391,
+      "stopReason": "tool_use",
+      "exitCode": 0,
+      "timedOut": false,
+      "modelEvidence": "Pinned --model argument and the CLI result's per-model usage key; not an independent backend attestation"
+    },
+    {
+      "id": "calc-module",
+      "role": "worker",
+      "modelRequested": "claude-sonnet-5-5",
+      "modelReported": "claude-sonnet-5-5",
+      "effort": "medium",
+      "startedAt": "2026-11-01T16:27:48.187Z",
+      "seconds": 7.368,
+      "promptChars": 9120,
+      "promptSha256": "0f89f412cc07b449e40d405f6108ddee9bbf251f615e05a722080e0b7411c8cb",
+      "usage": {
+        "input_tokens": 18232,
+        "cached_input_tokens": 0,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 1009,
+        "cache_write_1h_input_tokens": 0,
+        "reasoning_output_tokens": 0
+      },
+      "price": {
+        "kind": "standard-equivalent",
+        "usd": 0.046554
+      },
+      "auxiliary": [
+        {
+          "model": "claude-haiku-5-5",
+          "usage": {
+            "input_tokens": 4914,
+            "cached_input_tokens": 0,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 21,
+            "cache_write_1h_input_tokens": 0,
+            "reasoning_output_tokens": 0
+          },
+          "reportedCostUsd": 0.0005019
+        }
+      ],
+      "reportedCostUsd": 0.0470559,
+      "stopReason": "tool_use",
+      "exitCode": 0,
+      "timedOut": false,
+      "modelEvidence": "Pinned --model argument and the CLI result's per-model usage key; not an independent backend attestation"
+    },
+    {
+      "id": "ui-page",
+      "role": "worker",
+      "modelRequested": "claude-sonnet-5-5",
+      "modelReported": "claude-sonnet-5-5",
+      "effort": "medium",
+      "startedAt": "2026-11-01T16:27:48.184Z",
+      "seconds": 45.704,
+      "promptChars": 10545,
+      "promptSha256": "45329c93364a12c0373aedd3fe436a8e29e4168bf8f5ca745f514ceae281c709",
+      "usage": {
+        "input_tokens": 18754,
+        "cached_input_tokens": 0,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 6894,
+        "cache_write_1h_input_tokens": 0,
+        "reasoning_output_tokens": 405
+      },
+      "price": {
+        "kind": "standard-equivalent",
+        "usd": 0.106448
+      },
+      "auxiliary": [
+        {
+          "model": "claude-haiku-5-5",
+          "usage": {
+            "input_tokens": 5436,
+            "cached_input_tokens": 0,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 356,
+            "cache_write_1h_input_tokens": 0,
+            "reasoning_output_tokens": 338
+          },
+          "reportedCostUsd": 0.0007216
+        }
+      ],
+      "reportedCostUsd": 0.1071696,
+      "stopReason": "tool_use",
+      "exitCode": 0,
+      "timedOut": false,
+      "modelEvidence": "Pinned --model argument and the CLI result's per-model usage key; not an independent backend attestation"
+    },
+    {
+      "id": "review-0",
+      "role": "reviewer",
+      "modelRequested": "claude-opus-5-5",
+      "modelReported": "claude-opus-5-5",
+      "effort": "medium",
+      "startedAt": "2026-11-01T16:28:34.028Z",
+      "seconds": 16.761,
+      "promptChars": 21957,
+      "promptSha256": "068ccdadf5451651f130ef32c3b202a15e14c1413734ae5665fd2a28e545be7e",
+      "usage": {
+        "input_tokens": 25435,
+        "cached_input_tokens": 0,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 1353,
+        "cache_write_1h_input_tokens": 0,
+        "reasoning_output_tokens": 785
+      },
+      "price": {
+        "kind": "standard-equivalent",
+        "usd": 0.1288
+      },
+      "auxiliary": [
+        {
+          "model": "claude-haiku-5-5",
+          "usage": {
+            "input_tokens": 12071,
+            "cached_input_tokens": 0,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 211,
+            "cache_write_1h_input_tokens": 0,
+            "reasoning_output_tokens": 191
+          },
+          "reportedCostUsd": 0.0013126
+        }
+      ],
+      "reportedCostUsd": 0.1301126,
+      "stopReason": "tool_use",
+      "exitCode": 0,
+      "timedOut": false,
+      "modelEvidence": "Pinned --model argument and the CLI result's per-model usage key; not an independent backend attestation"
+    },
+    {
+      "id": "calc-module-repair-1",
+      "role": "worker",
+      "modelRequested": "claude-sonnet-5-5",
+      "modelReported": "claude-sonnet-5-5",
+      "effort": "medium",
+      "startedAt": "2026-11-01T16:28:50.796Z",
+      "seconds": 12.898,
+      "promptChars": 12314,
+      "promptSha256": "1665e1dc469df6ca85f06cc4358cb4b35b1733ae0973a5e09ef092eb8292a61b",
+      "usage": {
+        "input_tokens": 19577,
+        "cached_input_tokens": 0,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 989,
+        "cache_write_1h_input_tokens": 0,
+        "reasoning_output_tokens": 0
+      },
+      "price": {
+        "kind": "standard-equivalent",
+        "usd": 0.049044
+      },
+      "auxiliary": [
+        {
+          "model": "claude-haiku-5-5",
+          "usage": {
+            "input_tokens": 6249,
+            "cached_input_tokens": 0,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 25,
+            "cache_write_1h_input_tokens": 0,
+            "reasoning_output_tokens": 0
+          },
+          "reportedCostUsd": 0.0006374000000000001
+        }
+      ],
+      "reportedCostUsd": 0.04968140000000001,
+      "stopReason": "tool_use",
+      "exitCode": 0,
+      "timedOut": false,
+      "modelEvidence": "Pinned --model argument and the CLI result's per-model usage key; not an independent backend attestation"
+    },
+    {
+      "id": "ui-page-repair-1",
+      "role": "worker",
+      "modelRequested": "claude-sonnet-5-5",
+      "modelReported": "claude-sonnet-5-5",
+      "effort": "medium",
+      "startedAt": "2026-11-01T16:29:03.700Z",
+      "seconds": 35.732,
+      "promptChars": 23026,
+      "promptSha256": "501a5e825ff38c7a88c60566b0383e824fb6250c7cb5a64a949c257b8f80484c",
+      "usage": {
+        "input_tokens": 25542,
+        "cached_input_tokens": 0,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 6642,
+        "cache_write_1h_input_tokens": 0,
+        "reasoning_output_tokens": 72
+      },
+      "price": {
+        "kind": "standard-equivalent",
+        "usd": 0.117504
+      },
+      "auxiliary": [
+        {
+          "model": "claude-haiku-5-5",
+          "usage": {
+            "input_tokens": 12214,
+            "cached_input_tokens": 0,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 26,
+            "cache_write_1h_input_tokens": 0,
+            "reasoning_output_tokens": 0
+          },
+          "reportedCostUsd": 0.0012344
+        }
+      ],
+      "reportedCostUsd": 0.1187384,
+      "stopReason": "tool_use",
+      "exitCode": 0,
+      "timedOut": false,
+      "modelEvidence": "Pinned --model argument and the CLI result's per-model usage key; not an independent backend attestation"
+    },
+    {
+      "id": "review-1",
+      "role": "reviewer",
+      "modelRequested": "claude-opus-5-5",
+      "modelReported": "claude-opus-5-5",
+      "effort": "medium",
+      "startedAt": "2026-11-01T16:29:39.557Z",
+      "seconds": 18.541,
+      "promptChars": 22116,
+      "promptSha256": "6b84d4fe06580d04acba17f9739477107dc54aef036c2519dabbfe112610c117",
+      "usage": {
+        "input_tokens": 25512,
+        "cached_input_tokens": 0,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 1583,
+        "cache_write_1h_input_tokens": 0,
+        "reasoning_output_tokens": 625
+      },
+      "price": {
+        "kind": "standard-equivalent",
+        "usd": 0.133708
+      },
+      "auxiliary": [
+        {
+          "model": "claude-haiku-5-5",
+          "usage": {
+            "input_tokens": 12148,
+            "cached_input_tokens": 0,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 26,
+            "cache_write_1h_input_tokens": 0,
+            "reasoning_output_tokens": 0
+          },
+          "reportedCostUsd": 0.0012278000000000002
+        }
+      ],
+      "reportedCostUsd": 0.1349358,
+      "stopReason": "tool_use",
+      "exitCode": 0,
+      "timedOut": false,
+      "modelEvidence": "Pinned --model argument and the CLI result's per-model usage key; not an independent backend attestation"
+    }
+  ],
+  "checks": [
+    {
+      "round": 0,
+      "argv": [
+        "node",
+        "--test",
+        "calculator.test.mjs"
+      ],
+      "exitCode": 0,
+      "passed": true,
+      "stdout": "TAP version 13\n# Subtest: Astra warm: cached input is a subset, output counted once\nok 1 - Astra warm: cached input is a subset, output counted once\n  ---\n  duration_ms: 1.308841\n  type: 'test'\n  ...\n# Subtest: cache writes replace ordinary input instead of adding 125% twice\nok 2 - cache writes replace ordinary input instead of adding 125% twice\n  ---\n  duration_ms: 0.27238\n  type: 'test'\n  ...\n# Subtest: Luna same token mix uses its own prices\nok 3 - Luna same token mix uses its own prices\n  ---\n  duration_ms: 0.141505\n  type: 'test'\n  ...\n# Subtest: mixed reads+writes+ordinary\nok 4 - mixed reads+writes+ordinary\n  ---\n  duration_ms: 0.136645\n  type: 'test'\n  ...\n# Subtest: zero input and nonzero output\nok 5 - zero input and nonzero output\n  ---\n  duration_ms: 0.205592\n  type: 'test'\n  ...\n# Subtest: reject negative, fractional, nonfinite, string and missing counts\nok 6 - reject negative, fractional, nonfinite, string and missing counts\n  ---\n  duration_ms: 0.721167\n  type: 'test'\n  ...\n# Subtest: reject overlapping subsets and long context\nok 7 - reject overlapping subsets and long context\n  ---\n  duration_ms: 0.282106\n  type: 'test'\n  ...\n# Subtest: model keys do not accept prototype properties\nok 8 - model keys do not accept prototype properties\n  ---\n  duration_ms: 0.220934\n  type: 'test'\n  ...\n# Subtest: one reuse beats two ordinary reads\nok 9 - one reuse beats two ordinary reads\n  ---\n  duration_ms: 0.46176\n  type: 'test'\n  ...\n# Subtest: hundred deterministic mixed cases follow the declared rates\nok 10 - hundred deterministic mixed cases follow the declared rates\n  ---\n  duration_ms: 0.751993\n  type: 'test'\n  ...\n# Subtest: UI includes required accessible controls and local module\nok 11 - UI includes required accessible controls and local module\n  ---\n  duration_ms: 0.675245\n  type: 'test'\n  ...\n1..11\n# tests 11\n# suites 0\n# pass 11\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 81.278936\n",
+      "stderr": ""
+    },
+    {
+      "round": 1,
+      "argv": [
+        "node",
+        "--test",
+        "calculator.test.mjs"
+      ],
+      "exitCode": 0,
+      "passed": true,
+      "stdout": "TAP version 13\n# Subtest: Astra warm: cached input is a subset, output counted once\nok 1 - Astra warm: cached input is a subset, output counted once\n  ---\n  duration_ms: 1.211801\n  type: 'test'\n  ...\n# Subtest: cache writes replace ordinary input instead of adding 125% twice\nok 2 - cache writes replace ordinary input instead of adding 125% twice\n  ---\n  duration_ms: 0.248744\n  type: 'test'\n  ...\n# Subtest: Luna same token mix uses its own prices\nok 3 - Luna same token mix uses its own prices\n  ---\n  duration_ms: 0.134393\n  type: 'test'\n  ...\n# Subtest: mixed reads+writes+ordinary\nok 4 - mixed reads+writes+ordinary\n  ---\n  duration_ms: 0.15988\n  type: 'test'\n  ...\n# Subtest: zero input and nonzero output\nok 5 - zero input and nonzero output\n  ---\n  duration_ms: 0.19555\n  type: 'test'\n  ...\n# Subtest: reject negative, fractional, nonfinite, string and missing counts\nok 6 - reject negative, fractional, nonfinite, string and missing counts\n  ---\n  duration_ms: 0.497981\n  type: 'test'\n  ...\n# Subtest: reject overlapping subsets and long context\nok 7 - reject overlapping subsets and long context\n  ---\n  duration_ms: 0.264491\n  type: 'test'\n  ...\n# Subtest: model keys do not accept prototype properties\nok 8 - model keys do not accept prototype properties\n  ---\n  duration_ms: 0.199122\n  type: 'test'\n  ...\n# Subtest: one reuse beats two ordinary reads\nok 9 - one reuse beats two ordinary reads\n  ---\n  duration_ms: 0.332571\n  type: 'test'\n  ...\n# Subtest: hundred deterministic mixed cases follow the declared rates\nok 10 - hundred deterministic mixed cases follow the declared rates\n  ---\n  duration_ms: 0.680978\n  type: 'test'\n  ...\n# Subtest: UI includes required accessible controls and local module\nok 11 - UI includes required accessible controls and local module\n  ---\n  duration_ms: 0.646135\n  type: 'test'\n  ...\n1..11\n# tests 11\n# suites 0\n# pass 11\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 76.399208\n",
+      "stderr": ""
+    }
+  ],
+  "baseline": {
+    "CONTRACT.md": "12c16398e0305264c657c6771cb83c316cae9f51b0de3da507b2ce4b7106f84c",
+    "calculator.test.mjs": "3f0c187d5d1beb1e24ddce2e5d0576172890a4e25b806d0850a4283f43fc2f9c",
+    "calculator.mjs": null,
+    "index.html": null
+  },
+  "outputs": [
+    "calculator.mjs",
+    "index.html"
+  ],
+  "provider": "anthropic",
+  "client": "claude -p",
+  "pricing": {
+    "asOf": "2026-11-02",
+    "url": "https://platform.claude.com/docs/en/about-claude/pricing",
+    "assumption": "USD Claude API Standard list-price equivalent; not Claude subscription billing; no batch discount, tools or taxes"
+  },
+  "promptCaching": "off",
+  "escalations": [],
+  "outputHashes": {
+    "calculator.mjs": "93ffd10267125607415fdf4e958f0d9c81f2c58125dc5ec87a11d173a95a84fc",
+    "index.html": "d9b12362d88d805ce50ba23c788bbfb53df5f11f5aaaea326bf465d5cc33bf2c"
+  },
+  "finishedAt": "2026-11-01T16:29:58.101Z"
+}

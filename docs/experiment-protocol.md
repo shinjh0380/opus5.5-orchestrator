@@ -1,5 +1,7 @@
 # Cache Lab live pilot, September 7, 2026
 
+> **Historical record (v0.2.0, Codex + GPT-6 Astra / GPT-5.6 Luna).** Kept unchanged for comparison. The current Claude Opus 5.5 / Sonnet 5.5 configuration and its results are in [claude-live-results.md](claude-live-results.md) and [migration-claude.md](migration-claude.md).
+
 This is a small end-to-end demonstration, not a general model benchmark. Declare the protocol before making the calls.
 
 - Same seed CONTRACT.md, calculator.test.mjs, goal and output files.

@@ -1,0 +1,16 @@
+{
+  "verdict": "fix",
+  "summary": "calculator.mjs meets the contract. It validates models with own-key checks on a null-prototype RATES, so prototype names like `toString` are rejected. It rejects counts that are not nonnegative safe integers, requires cached + write <= input, and rejects input above 272000. The cost formulas match exactly, and the break-even loop correctly returns 1 for astra and luna. The supplied test run passed all 11 tests. index.html covers the required IDs, labels, presets with type=button, aria-live error and total, cache share, break-even statement, source link, rate date and scope notes. It also guards against horizontal overflow. One validation defect remains: the page reads each field with `Number(el.value)`. A blank field, or a partial or invalid entry such as \"-\" or \"e\" (which the browser reports as \"\"), becomes 0. The page then shows a valid-looking total and no error, when it should show an error. Smaller issue: error messages shown to users include English text in parentheses, while the contract requires Korean copy.",
+  "findings": [
+    {
+      "file": "index.html",
+      "issue": "render() uses Number($(k).value). An empty field becomes 0. An invalid partial entry in a type=number field (\"-\", \"1e\", \"--5\") is reported by the browser as \"\" and also becomes 0. The calculator then shows a confident total with no validation message for an entry it should flag. The contract requires a validation message, and never a valid-looking total, when the input is invalid.",
+      "fix": "Before calling calculateCost, check each count field. If el.value.trim() === '' or el.validity.badInput is true, show a Korean error in #error (for example '출력 토큰 값을 입력해 주세요.'), set #total to '—', add the invalid class and clear the breakdown, bar, share and break-even text. Do not treat the field as 0."
+    },
+    {
+      "file": "calculator.mjs / index.html",
+      "issue": "Error messages shown in #error include English text in parentheses, such as '(must be a non-negative safe integer)' and '(unknown model)'. The contract requires all user-facing copy to be Korean.",
+      "fix": "Remove the English parentheticals from the Error messages, or have the UI map errors to Korean-only messages before displaying them."
+    }
+  ]
+}

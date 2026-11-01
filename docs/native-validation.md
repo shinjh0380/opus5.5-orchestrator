@@ -1,8 +1,36 @@
 # Native-mode validation
 
+## Claude Code: Opus 5.5 / Sonnet 5.5 (current)
+
+Validation date: November 2, 2026. Host: Linux, Claude Code 2.1.316.
+
+### Plugin and installer
+
+- `claude plugin validate ./plugins/astra-orchestrator` and `claude plugin validate .` (marketplace) both passed.
+- In an isolated home directory, `claude plugin marketplace add <repository>` and `claude plugin install astra-orchestrator@astra-orchestrator` succeeded. `claude plugin list` showed 0.3.0 enabled, and `claude plugin details` listed skill `astra-orchestrator` and agents `astra-review` and `astra-worker`. Plugins ship their agents, so no separate role installation is needed.
+- The installer test suite covers the `.claude/` destinations, settings preservation, idempotence, `--check`, `--roles-only`, modified and unmanaged files, malformed manifests, linked destinations, and pinned model/effort values in the installed subagents. A test also asserts that no installed file mentions a legacy model.
+
+### Actual native implementation and review
+
+Same contract and tests as the September Astra/Luna smoke test. The primary was `claude-opus-5-5` (reported by the host). The plugin was loaded with `--plugin-dir`, and the request explicitly asked for one worker and a fresh reviewer.
+
+- The primary inspected the contract, then spawned `astra-orchestrator:astra-worker` (definition: Sonnet 5.5, medium, no per-spawn override). The worker wrote `csv.mjs`, and the primary's checks passed 5/5.
+- A fresh `astra-orchestrator:astra-review` (Opus 5.5, medium) returned **fix**: sparse-array holes such as `toCsv([[,'a']])` skipped type validation. The tests do not cover this.
+- Resuming the first worker was impossible because the run used `--no-session-persistence`. A fresh Sonnet worker repaired the file, and the primary recorded this explicitly as *not* an escalation.
+- The primary reran 5/5 checks and the sparse-array probes. A second fresh reviewer returned **accept**. `git diff` showed only `csv.mjs`.
+- Host per-model usage listed only `claude-opus-5-5` (≈$0.50 list-price estimate) and `claude-sonnet-5-5` (≈$0.14). Total wall time was 114 s.
+
+[Contract, tests, implementation and execution record](../examples/native-smoke-claude/record.json). Recheck locally without a model call: `node --test examples/native-smoke-claude/csv.test.mjs`.
+
+This was one headless run with the request naming the route. Automatic skill selection in an interactive session, the Agent tool's alias fallback when subagent files are missing, and the escalation rules (none triggered) were not exercised live. The final `csv.mjs` behaves the same as the Astra/Luna output on the contract tests and the sparse-array probes.
+
+## Codex: GPT-6 Astra / GPT-5.6 Luna (historical, v0.2.0)
+
+> Kept unchanged as the comparison baseline. These checks used Codex and the previous `.codex/` role files, which are no longer shipped.
+
 Validation date: September 7, 2026. Host: macOS, Codex desktop native collaboration tools; installation checks used Codex CLI 0.153.4.
 
-## Actual native implementation and review
+### Actual native implementation and review
 
 The primary loaded the new skill and gave a native worker a small CSV-serializer contract. The worker owned only `csv.mjs`; the primary supplied the contract and five acceptance tests beforehand.
 
@@ -22,7 +50,7 @@ node --test examples/native-smoke/csv.test.mjs
 
 Token usage and API-equivalent cost are **unavailable** for this native test. The earlier CLI pilot is a different accounting scope and is not substituted here. This small test demonstrates the routing and review workflow, not performance on large repositories or general cost savings.
 
-## Installer and plugin checks
+### Installer and plugin checks
 
 - The existing CLI suite plus five installer tests passed: 19/19.
 - Installer cases cover configuration preservation, preview mode, idempotence, installation checks, roles-only setup, modified and unmanaged files, malformed manifests, and linked destinations.
@@ -36,6 +64,6 @@ These checks did not alter the user's global Codex installation. Marketplace ins
 
 The original CLI runner and its model-call flow remain intact. Public pilot receipt data and generated code are unchanged; report labels were translated into English.
 
-## Recorded feature demo
+### Recorded feature demo
 
 A later interactive CLI run exercised the installed custom profiles end to end: Astra low → `astra_luna_worker` (Luna medium) → `astra_review` (Astra low). It added real CSV downloads to Cache Lab, passed 14 tests and an independent review, and was checked in a browser with two actual downloads plus an invalid-input case. [Generated files and reproduction instructions](../examples/native-cache-lab/README.md) are public. This adds custom-profile evidence for CLI 0.153.4; it does not establish compatibility with every host.
