@@ -13,8 +13,8 @@ Use Node.js 22+:
 
 ```sh
 npm test
-node bin/astra.mjs run examples/cache-lab/job.json --dry-run --out .runs/your-unique-check
-node plugins/astra-orchestrator/scripts/install-native.mjs --project /absolute/path/to/a-disposable-project --dry-run
+node bin/opus-orchestrator.mjs run examples/cache-lab/job.json --dry-run --out .runs/your-unique-check
+node plugins/opus-orchestrator/scripts/install-native.mjs --project /absolute/path/to/a-disposable-project --dry-run
 ```
 
 Tests do not call models; the runner tests use a mock `claude` executable. A live CLI run or native delegation consumes account usage. Keep raw prompts, logs, credentials, and private project paths out of public artifacts. `.runs/` is ignored for this reason.

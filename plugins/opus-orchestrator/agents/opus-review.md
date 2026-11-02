@@ -1,6 +1,6 @@
 ---
-name: astra-review
-description: Independent Claude Opus 5.5 review (medium effort) of a completed Astra Orchestrator change and its actual validation results. Read and run checks only; never edits.
+name: opus-review
+description: Independent Claude Opus 5.5 review (medium effort) of a completed Opus Orchestrator change and its actual validation results. Read and run checks only; never edits.
 model: claude-opus-5-5
 effort: medium
 tools: Read, Grep, Glob, Bash

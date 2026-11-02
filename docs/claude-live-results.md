@@ -53,7 +53,7 @@ All six candidates scored 11/11 and 8/8 with no page errors. These criteria do n
 
 ## Native mode
 
-One headless native run (Opus primary → Sonnet `astra-worker` → Opus `astra-review` → repair → fresh review) on the CSV smoke contract is recorded in [native-validation.md](native-validation.md). Its token figures come from the host and are a different accounting scope from the CLI receipts above.
+One headless native run (Opus primary → Sonnet `opus-worker` → Opus `opus-review` → repair → fresh review) on the CSV smoke contract is recorded in [native-validation.md](native-validation.md). Its token figures come from the host and are a different accounting scope from the CLI receipts above.
 
 ## Limits of this evidence
 

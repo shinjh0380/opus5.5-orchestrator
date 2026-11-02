@@ -8,28 +8,28 @@ This mode runs in the current Claude Code conversation. Opus 5.5 scopes, integra
 
 ```sh
 claude plugin marketplace add shinjh0380/opus5.5-orchestrator
-claude plugin install astra-orchestrator@astra-orchestrator
+claude plugin install opus-orchestrator@opus-orchestrator
 ```
 
-Or inside a session: `/plugin install astra-orchestrator --marketplace shinjh0380/opus5.5-orchestrator`. Claude Code plugins load the plugin's `agents/` directory automatically, so the plugin ships the skill **and** both pinned subagents. The skill is listed as `astra-orchestrator:astra-orchestrator`.
+Or inside a session: `/plugin install opus-orchestrator --marketplace shinjh0380/opus5.5-orchestrator`. Claude Code plugins load the plugin's `agents/` directory automatically, so the plugin ships the skill **and** both pinned subagents. The skill is listed as `opus-orchestrator:opus-orchestrator`.
 
 ### Project installation
 
 From a clone of this repository:
 
 ```sh
-node plugins/astra-orchestrator/scripts/install-native.mjs --project /absolute/path/to/your-project --dry-run
-node plugins/astra-orchestrator/scripts/install-native.mjs --project /absolute/path/to/your-project
-node plugins/astra-orchestrator/scripts/install-native.mjs --project /absolute/path/to/your-project --check
+node plugins/opus-orchestrator/scripts/install-native.mjs --project /absolute/path/to/your-project --dry-run
+node plugins/opus-orchestrator/scripts/install-native.mjs --project /absolute/path/to/your-project
+node plugins/opus-orchestrator/scripts/install-native.mjs --project /absolute/path/to/your-project --check
 ```
 
 Node.js 22+ is required. The target must be an existing directory. The installer writes only:
 
 ```text
-.claude/skills/astra-orchestrator/    # SKILL.md and supporting references
-.claude/agents/astra-worker.md
-.claude/agents/astra-review.md
-.claude/astra-orchestrator-install.json
+.claude/skills/opus-orchestrator/    # SKILL.md and supporting references
+.claude/agents/opus-worker.md
+.claude/agents/opus-review.md
+.claude/opus-orchestrator-install.json
 ```
 
 It does not edit `settings.json`, `CLAUDE.md`, login credentials, permissions, or other subagents. Identical files are left alone. An update is allowed only when the existing file matches the previous installer record; local modifications and unrelated conflicting files stop the installation before writes begin. Linked destination paths are rejected. Each file is replaced separately; the installation is not one atomic transaction. `--roles-only` installs just the two subagents. Choose either the plugin or the project skill to avoid duplicate skill entries.
@@ -39,15 +39,15 @@ It does not edit `settings.json`, `CLAUDE.md`, login credentials, permissions, o
 Open Claude Code in the target project, select Opus 5.5 as the primary model (`/model claude-opus-5-5`), and invoke the skill:
 
 ```text
-/astra-orchestrator Implement CSV export for the reports page.
+/opus-orchestrator Implement CSV export for the reports page.
 Keep the current API contract, run the relevant tests, and review the diff.
 ```
 
 | Role | Model | Effort | Scope |
 |---|---|---|---|
 | Primary | Claude Opus 5.5, selected by you | Your choice | Scope, integration, checks, delivery, escalated fixes |
-| `astra-worker` | Claude Sonnet 5.5 (`claude-sonnet-5-5`) | medium | Exact owned files |
-| `astra-review` | Claude Opus 5.5 (`claude-opus-5-5`) | medium | Independent review; Read/Grep/Glob/Bash only |
+| `opus-worker` | Claude Sonnet 5.5 (`claude-sonnet-5-5`) | medium | Exact owned files |
+| `opus-review` | Claude Opus 5.5 (`claude-opus-5-5`) | medium | Independent review; Read/Grep/Glob/Bash only |
 
 Subagent definitions pin full model IDs and effort. If they are missing, the `Agent` tool accepts only model aliases (`sonnet`, `opus`) and no effort; the skill discloses that the route is unpinned. It never silently uses the primary model for a missing worker route. Sonnet 5.5 needs Claude Code 2.1.284+. `CLAUDE_CODE_SUBAGENT_MODEL_FORCE` or managed settings can override subagent models.
 
@@ -65,7 +65,7 @@ The final record includes the route, requested model/effort, subagent identifier
 
 ## Remove the setup
 
-For a project installation, inspect `.claude/astra-orchestrator-install.json`, preserve any local changes, and remove only the files listed there plus the manifest. There is no automatic uninstaller. For the plugin, use `/plugin` or `claude plugin uninstall astra-orchestrator@astra-orchestrator`.
+For a project installation, inspect `.claude/opus-orchestrator-install.json`, preserve any local changes, and remove only the files listed there plus the manifest. There is no automatic uninstaller. For the plugin, use `/plugin` or `claude plugin uninstall opus-orchestrator@opus-orchestrator`.
 
 A project previously set up for the Codex version keeps `.agents/skills/astra-orchestrator/`, `.codex/agents/astra-*.toml` and `.codex/astra-orchestrator-install.json`. Claude Code does not read them; remove them by hand if you no longer use Codex. See [migration notes](migration-claude.md).
 

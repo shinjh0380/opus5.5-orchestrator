@@ -5,7 +5,7 @@ import crypto from 'node:crypto';
 import {fileURLToPath} from 'node:url';
 const plugin=path.resolve(import.meta.dirname,'..');
 const hash=b=>crypto.createHash('sha256').update(b).digest('hex');
-const manifestPath='.claude/astra-orchestrator-install.json';
+const manifestPath='.claude/opus-orchestrator-install.json';
 const exists=async p=>{try{return await fs.lstat(p)}catch(e){if(e.code==='ENOENT')return null;throw e;}};
 
 async function inspect(root,relative){
@@ -37,8 +37,8 @@ export async function installNative(project,{rolesOnly=false,dryRun=false,check=
  const requested=path.resolve(project),stat=await fs.lstat(requested);
  if(!stat.isDirectory()||stat.isSymbolicLink())throw Error('Project must be a real directory');
  const root=await fs.realpath(requested),selected=[];
- for(const name of ['astra-worker.md','astra-review.md'])selected.push({from:path.join(plugin,'agents',name),to:'.claude/agents/'+name});
- if(!rolesOnly){const src=path.join(plugin,'skills/astra-orchestrator');for(const rel of await collect(src))selected.push({from:path.join(src,rel),to:'.claude/skills/astra-orchestrator/'+rel});}
+ for(const name of ['opus-worker.md','opus-review.md'])selected.push({from:path.join(plugin,'agents',name),to:'.claude/agents/'+name});
+ if(!rolesOnly){const src=path.join(plugin,'skills/opus-orchestrator');for(const rel of await collect(src))selected.push({from:path.join(src,rel),to:'.claude/skills/opus-orchestrator/'+rel});}
  const previousBytes=await inspect(root,manifestPath);
  const previous=previousBytes?JSON.parse(previousBytes):{version:1,files:{}};
  if(previous.version!==1||!previous.files||typeof previous.files!=='object'||Array.isArray(previous.files))throw Error('Invalid existing install manifest');
@@ -60,13 +60,13 @@ export async function installNative(project,{rolesOnly=false,dryRun=false,check=
   const temp=target+'.'+crypto.randomUUID()+'.tmp';
   try{await fs.writeFile(temp,o.content,{flag:'wx'});await fs.rename(temp,target);}finally{await fs.rm(temp,{force:true});}
  }
- const record={version:1,plugin:'astra-orchestrator',files:{...previous.files,...Object.fromEntries(operations.map(o=>[o.to,o.expected]))}};
+ const record={version:1,plugin:'opus-orchestrator',files:{...previous.files,...Object.fromEntries(operations.map(o=>[o.to,o.expected]))}};
  const target=path.join(root,manifestPath);await fs.mkdir(path.dirname(target),{recursive:true});
  const currentManifest=await inspect(root,manifestPath);
  if((currentManifest?hash(currentManifest):null)!==(previousBytes?hash(previousBytes):null))throw Error('Install manifest changed concurrently; rerun after resolving the other install');
  await fs.writeFile(target,JSON.stringify(record,null,2)+'\n');
  for(const o of operations)if(hash(await inspect(root,o.to))!==o.expected)throw Error('Post-install verification failed: '+o.to);
- return {mode:'installed',project:root,files:operations.map(o=>({path:o.to,action:o.action})),next:'Start a new Claude Code session in the project, select claude-opus-5-5 (/model), and invoke /astra-orchestrator.'};
+ return {mode:'installed',project:root,files:operations.map(o=>({path:o.to,action:o.action})),next:'Start a new Claude Code session in the project, select claude-opus-5-5 (/model), and invoke /opus-orchestrator.'};
 }
 
 if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url)){

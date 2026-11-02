@@ -32,8 +32,8 @@ Node.js 22 이상과 Claude Code 2.1.284 이상이 필요합니다. `claude --he
 git clone https://github.com/shinjh0380/opus5.5-orchestrator.git
 cd opus5.5-orchestrator
 npm test
-node bin/astra.mjs run examples/cache-lab/job.json --dry-run --out .runs/check
-node bin/astra.mjs run examples/cache-lab/job.json --out .runs/demo
+node bin/opus-orchestrator.mjs run examples/cache-lab/job.json --dry-run --out .runs/check
+node bin/opus-orchestrator.mjs run examples/cache-lab/job.json --out .runs/demo
 ```
 
 `--dry-run`은 입력과 파일 범위를 검증하고 후보 폴더를 준비하며, 모델을 호출하지 않습니다. 실제 `run`은 모델 사용량을 소비합니다. 같은 출력 폴더는 다시 쓸 수 없으므로 실행할 때마다 새 경로를 지정하세요.
@@ -49,7 +49,7 @@ python3 -m http.server 8791 --bind 127.0.0.1 --directory .runs/demo/candidate
 검토가 끝난 후보는 원래 seed 또는 같은 내용의 작업 사본에 적용할 수 있습니다.
 
 ```sh
-node bin/astra.mjs apply .runs/demo examples/cache-lab/seed
+node bin/opus-orchestrator.mjs apply .runs/demo examples/cache-lab/seed
 ```
 
 적용 전에 원본 컨텍스트와 후보의 해시를 모두 확인하고, 원본이 바뀌었으면 중단합니다. 여러 파일을 원자적으로 교체하는 트랜잭션은 아니므로 버전 관리 중인 작업 사본에서 사용하세요.

@@ -31,10 +31,10 @@ Do not repeat the implementation merely to prove agreement.
   "mode": "native",
   "route": "delegate-and-review",
   "rootModel": "unverified",
-  "workers": [{"subagent": "astra-worker", "requestedModel": "claude-sonnet-5-5", "effort": "medium", "ownedFiles": ["src/export/csv.ts"]}],
+  "workers": [{"subagent": "opus-worker", "requestedModel": "claude-sonnet-5-5", "effort": "medium", "ownedFiles": ["src/export/csv.ts"]}],
   "escalations": [],
   "checks": [{"command": "the actual check command", "result": "passed"}],
-  "review": {"subagent": "astra-review", "requestedModel": "claude-opus-5-5", "effort": "medium", "verdict": "accept"},
+  "review": {"subagent": "opus-review", "requestedModel": "claude-opus-5-5", "effort": "medium", "verdict": "accept"},
   "usage": "unavailable"
 }
 ```

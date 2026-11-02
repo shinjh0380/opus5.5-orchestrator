@@ -49,7 +49,7 @@ test("deny path traversal, hidden files and platform path ambiguity", () => {
   assert.equal(relativeFile("src/app.mjs"), "src/app.mjs");
 });
 test("deny context symlinks", async () => {
-  const d = await fs.mkdtemp(path.join(os.tmpdir(), "astra-path-"));
+  const d = await fs.mkdtemp(path.join(os.tmpdir(), "opus-path-"));
   await fs.writeFile(path.join(d, "real"), "safe");
   await fs.symlink(path.join(d, "real"), path.join(d, "link"));
   await assert.rejects(() => safeRead(d, "link"));
@@ -177,7 +177,7 @@ test("CLI usage is normalized per model; host auxiliary models are kept separate
   assert.equal(summarize({}, "claude-opus-5-5"), null);
 });
 test("apply verifies all context and candidate hashes before writes", async () => {
-  const d = await fs.mkdtemp(path.join(os.tmpdir(), "astra-apply-")),
+  const d = await fs.mkdtemp(path.join(os.tmpdir(), "opus-apply-")),
     r = path.join(d, "run"),
     target = path.join(d, "target");
   await fs.mkdir(path.join(r, "candidate"), { recursive: true });

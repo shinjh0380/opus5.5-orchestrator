@@ -1,6 +1,6 @@
 ---
-name: astra-worker
-description: Implement a bounded, file-owned task delegated by the Astra Orchestrator primary agent (Claude Sonnet 5.5, medium effort). Use only for tasks that arrive with an explicit file-ownership contract.
+name: opus-worker
+description: Implement a bounded, file-owned task delegated by the Opus Orchestrator primary agent (Claude Sonnet 5.5, medium effort). Use only for tasks that arrive with an explicit file-ownership contract.
 model: claude-sonnet-5-5
 effort: medium
 disallowedTools: Agent

@@ -32,7 +32,7 @@ async function fixture({
   maxRepairs = 0,
   escalation = true,
 } = {}) {
-  const root = await fs.mkdtemp(path.join(os.tmpdir(), "astra-runner-"));
+  const root = await fs.mkdtemp(path.join(os.tmpdir(), "opus-runner-"));
   await fs.mkdir(path.join(root, "seed"));
   await fs.writeFile(
     path.join(root, "seed", "CONTRACT.md"),

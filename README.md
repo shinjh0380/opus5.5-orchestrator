@@ -40,19 +40,19 @@ Requires Claude Code 2.1.284+ (for Sonnet 5.5) with access to Opus 5.5 and Sonne
 
 ```sh
 claude plugin marketplace add shinjh0380/opus5.5-orchestrator
-claude plugin install astra-orchestrator@astra-orchestrator
+claude plugin install opus-orchestrator@opus-orchestrator
 ```
 
 Or, inside a session:
 
 ```text
-/plugin install astra-orchestrator --marketplace shinjh0380/opus5.5-orchestrator
+/plugin install opus-orchestrator --marketplace shinjh0380/opus5.5-orchestrator
 ```
 
 The plugin ships the skill and both pinned subagents. Open Claude Code in **your project**, select **Opus 5.5** (`/model claude-opus-5-5`) as the primary model, and say:
 
 ```text
-/astra-orchestrator:astra-orchestrator Add CSV export to the existing reports page.
+/opus-orchestrator:opus-orchestrator Add CSV export to the existing reports page.
 Preserve existing behavior and run the relevant checks before review.
 ```
 
@@ -61,10 +61,10 @@ Prefer a project installation instead of the plugin? Use Node.js 22+:
 ```sh
 git clone https://github.com/shinjh0380/opus5.5-orchestrator.git
 cd opus5.5-orchestrator
-node plugins/astra-orchestrator/scripts/install-native.mjs --project /absolute/path/to/your-project
+node plugins/opus-orchestrator/scripts/install-native.mjs --project /absolute/path/to/your-project
 ```
 
-The installer adds the skill to `.claude/skills/` and two subagents to `.claude/agents/`, then invoke `/astra-orchestrator`. It preserves existing `settings.json`, permissions, authentication, MCP settings, and `CLAUDE.md`. A user-modified or conflicting file is not overwritten. Use `--dry-run` to preview or `--check` to verify an installation. Choose the plugin or the project skill, not both.
+The installer adds the skill to `.claude/skills/` and two subagents to `.claude/agents/`, then invoke `/opus-orchestrator`. It preserves existing `settings.json`, permissions, authentication, MCP settings, and `CLAUDE.md`. A user-modified or conflicting file is not overwritten. Use `--dry-run` to preview or `--check` to verify an installation. Choose the plugin or the project skill, not both.
 
 The primary agent scopes the work, gives the Sonnet worker an explicit file contract, verifies the result, and asks a fresh Opus reviewer to inspect it. One implementer is the default for bounded work; two are used only for independent files. Tiny changes stay with the primary agent unless you explicitly request delegation. A task moves to Opus only on observable conditions: an unusable result, the same failure after one Sonnet repair, or difficulty declared before delegation.
 
@@ -78,8 +78,8 @@ Use Node.js 22+ and Claude Code 2.1.284+ whose `claude --help` lists `--json-sch
 
 ```sh
 npm test
-node bin/astra.mjs run examples/cache-lab/job.json --dry-run --out .runs/check
-node bin/astra.mjs run examples/cache-lab/job.json --out .runs/demo
+node bin/opus-orchestrator.mjs run examples/cache-lab/job.json --dry-run --out .runs/check
+node bin/opus-orchestrator.mjs run examples/cache-lab/job.json --out .runs/demo
 ```
 
 `--dry-run` validates the job and prepares a candidate without model calls. A live run consumes model usage. Each run needs a new output directory. To select another CLI installation, pass `--claude /absolute/path/to/claude` or set `CLAUDE_BIN`. The runner uses existing Claude Code authentication (subscription login or `ANTHROPIC_API_KEY`), and runs each child request with no tools, no user/project/local settings, no MCP servers, no skills and no saved session. It pins the model and effort from the job without changing global settings, and fails a call when the CLI reports a model other than the requested one.
@@ -93,7 +93,7 @@ python3 -m http.server 8791 --bind 127.0.0.1 --directory .runs/demo/candidate
 After review, apply the accepted candidate to the original seed or an identical working copy:
 
 ```sh
-node bin/astra.mjs apply .runs/demo examples/cache-lab/seed
+node bin/opus-orchestrator.mjs apply .runs/demo examples/cache-lab/seed
 ```
 
 Application verifies original context and candidate hashes and stops if they changed. It is not a transaction across all files; use a version-controlled working copy.
@@ -145,13 +145,13 @@ The CLI sends the goal and selected context to Anthropic through Claude Code. Ch
 ## Development and references
 
 - [Contributing](CONTRIBUTING.md)
-- [Native skill](plugins/astra-orchestrator/skills/astra-orchestrator/SKILL.md) and [installer](plugins/astra-orchestrator/scripts/install-native.mjs)
+- [Native skill](plugins/opus-orchestrator/skills/opus-orchestrator/SKILL.md) and [installer](plugins/opus-orchestrator/scripts/install-native.mjs)
 - [CLI validation and pricing](src/core.mjs) and [runner](src/runner.mjs)
 - [Native validation evidence](docs/native-validation.md)
 - [Migration from Astra/Luna: role mapping, benchmark sources, risks](docs/migration-claude.md)
 - [Historical recorded feature demo (Codex): CSV export](examples/native-cache-lab/)
 
-The title is now Opus Orchestrator. The CLI command, plugin and skill identifiers (`astra-orchestrator`) are unchanged from the Codex version so existing job files and install commands keep working. Inspired by the role separation in [donvito/codex-astra-luna-orchestrator](https://github.com/donvito/codex-astra-luna-orchestrator), which provides native Codex configuration, skills, and usage tools under Apache-2.0. The original comparison used commit `f1de1b8729c8ccfb7978321b4764c58bd34c8493`. [DannyMac180/sol-advisor](https://github.com/DannyMac180/sol-advisor) provides another selective-delegation approach with a Sol primary and Luna/Terra workers. Its plugin-plus-companion-role pattern informed the installation UX. This implementation was written independently; neither project endorses it.
+In this fork the project, CLI command, plugin, skill and subagents are renamed from `astra-orchestrator` / `astra-worker` / `astra-review` to `opus-orchestrator` / `opus-worker` / `opus-review`. Reinstall with the commands above; job files are unaffected. Inspired by the role separation in [donvito/codex-astra-luna-orchestrator](https://github.com/donvito/codex-astra-luna-orchestrator), which provides native Codex configuration, skills, and usage tools under Apache-2.0. The original comparison used commit `f1de1b8729c8ccfb7978321b4764c58bd34c8493`. [DannyMac180/sol-advisor](https://github.com/DannyMac180/sol-advisor) provides another selective-delegation approach with a Sol primary and Luna/Terra workers. Its plugin-plus-companion-role pattern informed the installation UX. This implementation was written independently; neither project endorses it.
 
 ## Thanks
 

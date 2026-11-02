@@ -1,9 +1,9 @@
 ---
-name: astra-orchestrator
-description: Coordinate Claude Code implementation with Opus 5.5 planning and review and focused Sonnet 5.5 native subagents. Use when the user requests Astra orchestration, Opus/Sonnet planner-worker delegation, bounded delegation, or this workflow for a coding task. Plain questions about models or pricing do not require delegation.
+name: opus-orchestrator
+description: Coordinate Claude Code implementation with Opus 5.5 planning and review and focused Sonnet 5.5 native subagents. Use when the user requests Opus orchestration, Opus/Sonnet planner-worker delegation, bounded delegation, or this workflow for a coding task. Plain questions about models or pricing do not require delegation.
 ---
 
-# Astra Orchestrator
+# Opus Orchestrator
 
 Use the current Claude Code conversation to plan, delegate through native subagents (the `Agent` tool), verify, and deliver the user's task. This skill does not launch `claude -p`, create separate sessions, or require a job JSON file. The standalone CLI is a separate, explicitly selected workflow.
 
@@ -19,8 +19,8 @@ The intended primary model is Claude Opus 5.5 (`claude-opus-5-5`) at the user's 
 
 Use the installed subagents when they are listed:
 
-- `astra-worker`: Claude Sonnet 5.5 (`claude-sonnet-5-5`), effort medium, implementation.
-- `astra-review`: Claude Opus 5.5 (`claude-opus-5-5`), effort medium, independent review with Read/Grep/Glob/Bash only.
+- `opus-worker`: Claude Sonnet 5.5 (`claude-sonnet-5-5`), effort medium, implementation.
+- `opus-review`: Claude Opus 5.5 (`claude-opus-5-5`), effort medium, independent review with Read/Grep/Glob/Bash only.
 
 These definitions pin the model and effort. Do not attach a conflicting `model` override when spawning them. If they are absent, the `Agent` tool's `model` parameter accepts only aliases (`sonnet`, `opus`); aliases follow the latest model and cannot pin effort, so use them only after telling the user the route is unpinned, and record `requestedModel` as the alias. If `CLAUDE_CODE_SUBAGENT_MODEL_FORCE` or another host setting blocks per-spawn models, explain the missing capability and refer to [setup](references/setup.md). Never silently replace the Sonnet worker with the parent's model or fall back to a subprocess.
 
@@ -49,9 +49,9 @@ Default to one repair round. Move a task from Sonnet to Opus only on one of thes
 - **Repeated failure:** the same check or review finding still fails after one focused Sonnet repair.
 - **Declared difficulty:** before delegation, the contract requires coordinated changes across coupled files that cannot be split, or a design decision the primary has not settled. In that case keep the task with the Opus primary instead of delegating.
 
-Escalate by fixing it in the Opus primary or by spawning `astra-worker` with `model: "opus"` and saying so in the record. Do not run Sonnet and Opus on the same task in parallel, and do not escalate for transport, permission, or authentication errors. Stop and report a blocker when required tools, permissions, or information are missing; do not repeat an unchanged failing call. This is a workflow bound, not a hard billing limit.
+Escalate by fixing it in the Opus primary or by spawning `opus-worker` with `model: "opus"` and saying so in the record. Do not run Sonnet and Opus on the same task in parallel, and do not escalate for transport, permission, or authentication errors. Stop and report a blocker when required tools, permissions, or information are missing; do not repeat an unchanged failing call. This is a workflow bound, not a hard billing limit.
 
-After checks pass, spawn a fresh `astra-review` with the goal, allowed files, current diff, relevant reference paths, and actual check results. Ask for `accept`, `fix`, or `blocked`, with actionable file references. The reviewer must not edit or repair its own findings. A material fix invalidates the old verdict: rerun affected checks and obtain a fresh review of the changed result.
+After checks pass, spawn a fresh `opus-review` with the goal, allowed files, current diff, relevant reference paths, and actual check results. Ask for `accept`, `fix`, or `blocked`, with actionable file references. The reviewer must not edit or repair its own findings. A material fix invalidates the old verdict: rerun affected checks and obtain a fresh review of the changed result.
 
 Native subagents operate under host permissions. File ownership here is an instruction plus diff verification, not the standalone runner's write filter. The reviewer has no Edit/Write tool, but Bash can write, and plugin subagents ignore `permissionMode`. Preserve that distinction when describing assurance.
 

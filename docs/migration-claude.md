@@ -67,8 +67,8 @@ Accessed 2026-11-02. **A** = official vendor figure. **I** = independent evaluat
 | Role | Before | After | Main reason | Expected difference |
 |---|---|---|---|---|
 | Native primary | Astra, user's effort | **Opus 5.5**, user's effort | Frontier tier, as Astra was. Leads Sonnet on long-context coding, consistency and review precision | Comparable. User-selected, so the skill cannot enforce it |
-| Native worker `astra-worker` | Luna medium | **Sonnet 5.5 medium** | Bounded, well-specified implementation. Sonnet matches or beats Opus on Terminal-Bench, Toolathlon Pass@1 and FrontierSWE, is faster, and costs half as much. It is far above Luna on every shared measure | Implementation quality likely **higher** than Luna; ~10× Luna's token price |
-| Native reviewer `astra-review` | Astra low, read-only | **Opus 5.5 medium**, tools Read/Grep/Glob/Bash | Review is the acceptance gate. Opus leads on review precision. **At low effort Opus scores below Astra low** (AA 35 vs 43; TB 31.3 vs 41.9). At medium it exceeds Astra low (48; 52.5) | Reviews stricter than before. Slower first token (≈16 s vs ≈2 s) |
+| Native worker `opus-worker` | Luna medium | **Sonnet 5.5 medium** | Bounded, well-specified implementation. Sonnet matches or beats Opus on Terminal-Bench, Toolathlon Pass@1 and FrontierSWE, is faster, and costs half as much. It is far above Luna on every shared measure | Implementation quality likely **higher** than Luna; ~10× Luna's token price |
+| Native reviewer `opus-review` | Astra low, read-only | **Opus 5.5 medium**, tools Read/Grep/Glob/Bash | Review is the acceptance gate. Opus leads on review precision. **At low effort Opus scores below Astra low** (AA 35 vs 43; TB 31.3 vs 41.9). At medium it exceeds Astra low (48; 52.5) | Reviews stricter than before. Slower first token (≈16 s vs ≈2 s) |
 | CLI `planner` (team) | Astra low | **Opus 5.5 medium** | Plans set the file contracts every worker depends on. Both recorded historical failures were planner contract errors. Same effort reasoning as the reviewer | Plans more detailed. Higher latency |
 | CLI `planner` (solo implementer) | Astra low | **Opus 5.5 medium** | Solo is the single-model comparison arm; it keeps the frontier model, as before | — |
 | CLI `worker` | Luna medium | **Sonnet 5.5 medium** | As for the native worker | — |
@@ -113,7 +113,7 @@ Never escalated: non-zero exit, authentication or transport errors, `is_error`, 
 
 Removed from the active path (still in git history at `f0499da`): `plugins/astra-orchestrator/.codex-plugin/plugin.json`, `agents/astra-luna-worker.toml`, `agents/astra-review.toml`, `skills/astra-orchestrator/agents/openai.yaml`, `.agents/plugins/marketplace.json`, and the `gpt-*` price table.
 
-Added: `.claude-plugin/marketplace.json`, `plugins/astra-orchestrator/.claude-plugin/plugin.json`, `agents/astra-worker.md`, `agents/astra-review.md`, `scripts/publish-claude-evidence.mjs`, `examples/published-claude/`, and this document.
+Added: `.claude-plugin/marketplace.json`, `plugins/opus-orchestrator/.claude-plugin/plugin.json`, `agents/opus-worker.md`, `agents/opus-review.md`, `scripts/publish-claude-evidence.mjs`, `examples/published-claude/`, and this document.
 
 Preserved as historical evidence: `examples/published/`, `examples/native-smoke/`, `examples/native-cache-lab/`, `docs/live-results.md`, `docs/experiment-protocol.md`, and the Codex sections of `docs/native-validation.md`. The Cache Lab seed (`CONTRACT.md`, tests) still describes Astra/Luna **prices as calculator content**. It was left unchanged so that before and after runs use identical inputs and success criteria. It does not route any model call.
 

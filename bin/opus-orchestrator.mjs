@@ -3,7 +3,7 @@ import path from "node:path";
 import { run, apply } from "../src/runner.mjs";
 const [cmd, file, ...rest] = process.argv.slice(2);
 const usage =
-  "astra-orchestrator run job.json [--out directory] [--claude binary] [--dry-run]\nastra-orchestrator apply run-directory target-directory";
+  "opus-orchestrator run job.json [--out directory] [--claude binary] [--dry-run]\nopus-orchestrator apply run-directory target-directory";
 try {
   if (cmd === "run" && file) {
     const opts = {};
