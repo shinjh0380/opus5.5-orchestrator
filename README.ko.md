@@ -1,4 +1,4 @@
-# Astra Orchestrator
+# Opus Orchestrator
 
 이 문서는 **`claude -p` CLI 방식**의 한국어 안내입니다. Claude Code 네이티브 스킬·플러그인의 설치와 사용법은 [영문 README](README.md)와 [네이티브 모드 안내](docs/native-mode.md)를 참고하세요.
 

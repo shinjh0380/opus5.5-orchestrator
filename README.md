@@ -1,4 +1,4 @@
-# Astra Orchestrator
+# Opus Orchestrator
 
 **Claude Opus 5.5 plans and reviews. Claude Sonnet 5.5 implements focused tasks. Use it inside Claude Code, or run the CLI for a recorded experiment.**
 
@@ -151,7 +151,7 @@ The CLI sends the goal and selected context to Anthropic through Claude Code. Ch
 - [Migration from Astra/Luna: role mapping, benchmark sources, risks](docs/migration-claude.md)
 - [Historical recorded feature demo (Codex): CSV export](examples/native-cache-lab/)
 
-The project name, CLI command and skill name are unchanged from the Codex version. Inspired by the role separation in [donvito/codex-astra-luna-orchestrator](https://github.com/donvito/codex-astra-luna-orchestrator), which provides native Codex configuration, skills, and usage tools under Apache-2.0. The original comparison used commit `f1de1b8729c8ccfb7978321b4764c58bd34c8493`. [DannyMac180/sol-advisor](https://github.com/DannyMac180/sol-advisor) provides another selective-delegation approach with a Sol primary and Luna/Terra workers. Its plugin-plus-companion-role pattern informed the installation UX. This implementation was written independently; neither project endorses it.
+The title is now Opus Orchestrator. The CLI command, plugin and skill identifiers (`astra-orchestrator`) are unchanged from the Codex version so existing job files and install commands keep working. Inspired by the role separation in [donvito/codex-astra-luna-orchestrator](https://github.com/donvito/codex-astra-luna-orchestrator), which provides native Codex configuration, skills, and usage tools under Apache-2.0. The original comparison used commit `f1de1b8729c8ccfb7978321b4764c58bd34c8493`. [DannyMac180/sol-advisor](https://github.com/DannyMac180/sol-advisor) provides another selective-delegation approach with a Sol primary and Luna/Terra workers. Its plugin-plus-companion-role pattern informed the installation UX. This implementation was written independently; neither project endorses it.
 
 ## Thanks
 
